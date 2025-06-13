@@ -1,0 +1,67 @@
+<script type="text/javascript">
+  RED.nodes.registerType('trustpoint-keygen', {
+    category: 'Trustpoint',
+    color: '#d9f2d9',
+    defaults: {
+      name: { value: "" },
+      keyType: { value: "RSA" },
+      keySize: { value: "2048" },
+      ecCurve: { value: "secp256r1" }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-key",
+    label: function () {
+      return this.name || "trustpoint-keygen";
+    }
+  });
+</script>
+
+<div class="form-row">
+  <label for="node-input-name">Name</label>
+  <input type="text" id="node-input-name">
+</div>
+
+<div class="form-row">
+  <label for="node-input-keyType">Key Type</label>
+  <select id="node-input-keyType">
+    <option value="RSA">RSA</option>
+    <option value="EC">EC</option>
+  </select>
+</div>
+
+<div class="form-row" id="rsa-options">
+  <label for="node-input-keySize">Key Size (for RSA)</label>
+  <select id="node-input-keySize">
+    <option value="2048">2048</option>
+    <option value="3072">3072</option>
+    <option value="4096">4096</option>
+  </select>
+</div>
+
+<div class="form-row" id="ec-options">
+  <label for="node-input-ecCurve">EC Curve (for EC)</label>
+  <select id="node-input-ecCurve">
+    <option value="secp256r1">secp256r1</option>
+    <option value="secp384r1">secp384r1</option>
+    <option value="secp521r1">secp521r1</option>
+  </select>
+</div>
+
+<script type="text/javascript">
+  (function() {
+    function toggleOptions() {
+      var keyType = $("#node-input-keyType").val();
+      if (keyType === "RSA") {
+        $("#rsa-options").show();
+        $("#ec-options").hide();
+      } else if (keyType === "EC") {
+        $("#rsa-options").hide();
+        $("#ec-options").show();
+      }
+    }
+
+    $("#node-input-keyType").change(toggleOptions);
+    toggleOptions();
+  })();
+</script>

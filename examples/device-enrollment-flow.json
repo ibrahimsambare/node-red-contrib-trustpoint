@@ -1,0 +1,243 @@
+[
+  {
+    "id": "10203369996a7c08",
+    "type": "tab",
+    "label": "Flow 5",
+    "disabled": false,
+    "info": "",
+    "env": []
+  },
+  {
+    "id": "b247d6ba90356afe",
+    "type": "inject",
+    "z": "10203369996a7c08",
+    "name": "Start Enroll",
+    "props": [],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 310,
+    "y": 340,
+    "wires": [
+      [
+        "3322b8cf6d41ca79"
+      ]
+    ]
+  },
+  {
+    "id": "3322b8cf6d41ca79",
+    "type": "trustpoint-keygen",
+    "z": "10203369996a7c08",
+    "name": "Keygen Device Key",
+    "keyType": "RSA",
+    "keySize": "2048",
+    "x": 550,
+    "y": 340,
+    "wires": [
+      [
+        "98f1ee2df7283e9a",
+        "81a52bad0c0fedd1",
+        "b57421381e2a9308"
+      ]
+    ]
+  },
+  {
+    "id": "d8df6da6412fce7f",
+    "type": "trustpoint-store",
+    "z": "10203369996a7c08",
+    "name": "Store Device Key",
+    "operation": "store",
+    "location": "file",
+    "format": "pem",
+    "key": "device-key",
+    "filePath": "/Users/ibrahimsambare/.node-red/keys/Test-3-key.pem",
+    "x": 990,
+    "y": 280,
+    "wires": [
+      [
+        "407809c19e62cdf5"
+      ]
+    ]
+  },
+  {
+    "id": "98f1ee2df7283e9a",
+    "type": "trustpoint-create-csr",
+    "z": "10203369996a7c08",
+    "name": "Create CSR",
+    "x": 770,
+    "y": 400,
+    "wires": [
+      [
+        "8f0e8756b6154eba"
+      ]
+    ]
+  },
+  {
+    "id": "8f0e8756b6154eba",
+    "type": "change",
+    "z": "10203369996a7c08",
+    "name": "Prepare SimpleEnroll Payload",
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{\"estBaseUrl\": \"https://localhost/.well-known/est/arburg/domaincredential/simpleenroll/\", \"csr\": payload.csrDer}",
+        "tot": "jsonata"
+      }
+    ],
+    "x": 1030,
+    "y": 400,
+    "wires": [
+      [
+        "e962817f7b3b6925"
+      ]
+    ]
+  },
+  {
+    "id": "e962817f7b3b6925",
+    "type": "trustpoint-simpleenroll",
+    "z": "10203369996a7c08",
+    "name": "SimpleEnroll DomainCredential",
+    "estBaseUrl": "",
+    "useBasic": true,
+    "username": "Test-3",
+    "password": "qUntoB52SC0brsxa2OXJvQ",
+    "useMtls": false,
+    "clientCert": "",
+    "clientKey": "",
+    "x": 1350,
+    "y": 400,
+    "wires": [
+      [
+        "fd28d4ad9e4fdbc0",
+        "13295902fc23f619",
+        "a8611111a8a393e1"
+      ]
+    ]
+  },
+  {
+    "id": "fd28d4ad9e4fdbc0",
+    "type": "trustpoint-store",
+    "z": "10203369996a7c08",
+    "name": "Store Device Cert SimpleEnroll",
+    "operation": "store",
+    "location": "file",
+    "format": "pem",
+    "key": "device-cert-simpleenroll",
+    "filePath": "/Users/ibrahimsambare/.node-red/certifications/Test-3-cert.pem",
+    "x": 1730,
+    "y": 400,
+    "wires": [
+      [
+        "9c0fe26edc297032"
+      ]
+    ]
+  },
+  {
+    "id": "9c0fe26edc297032",
+    "type": "debug",
+    "z": "10203369996a7c08",
+    "name": "Debug SimpleEnroll",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 2010,
+    "y": 400,
+    "wires": []
+  },
+  {
+    "id": "81a52bad0c0fedd1",
+    "type": "debug",
+    "z": "10203369996a7c08",
+    "name": "debug 3",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload.privateKey",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 700,
+    "y": 500,
+    "wires": []
+  },
+  {
+    "id": "407809c19e62cdf5",
+    "type": "debug",
+    "z": "10203369996a7c08",
+    "name": "debug 4",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1200,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "13295902fc23f619",
+    "type": "debug",
+    "z": "10203369996a7c08",
+    "name": "debug 5",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1550,
+    "y": 500,
+    "wires": []
+  },
+  {
+    "id": "b57421381e2a9308",
+    "type": "function",
+    "z": "10203369996a7c08",
+    "name": "function 1",
+    "func": "msg.payload = msg.payload.privateKey.toString();\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 760,
+    "y": 280,
+    "wires": [
+      [
+        "d8df6da6412fce7f"
+      ]
+    ]
+  },
+  {
+    "id": "a8611111a8a393e1",
+    "type": "function",
+    "z": "10203369996a7c08",
+    "name": "function 2",
+    "func": "if (Buffer.isBuffer(msg.payload)) {\n\n    node.log(\"PKCS7 cert Buffer detected → storing raw Buffer.\");\n    return msg;\n\n} else if (typeof msg.payload === 'string') {\n\n    if (msg.payload.startsWith('-----BEGIN CERTIFICATE-----')) {\n        node.log(\"Cert PEM detected → storing.\");\n        return msg;\n    } else {\n        node.warn(\"No cert to store (Server message): \" + msg.payload);\n        return null;  // IMPORTANT → on bloque le store pour les messages texte\n    }\n\n} else {\n    node.warn(\"Unknown payload type → not storing.\");\n    return null;\n}\n",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1540,
+    "y": 340,
+    "wires": [
+      [
+        "fd28d4ad9e4fdbc0"
+      ]
+    ]
+  }
+]

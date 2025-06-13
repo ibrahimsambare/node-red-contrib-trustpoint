@@ -1,0 +1,56 @@
+<script type="text/javascript">
+    RED.nodes.registerType('trustpoint-create-csr', {
+        category: 'Trustpoint',
+        color: '#b3d9ff',
+        defaults: {
+            name: { value: "" },
+            subjectCN: { value: "" },
+            subjectO: { value: "" },
+            subjectOU: { value: "" },
+            subjectC: { value: "" },
+            subjectST: { value: "" },
+            subjectL: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-certificate",
+        label: function () {
+            return this.name || "trustpoint-create-csr";
+        }
+    });
+</script>
+
+<div class="form-row">
+    <label for="node-input-name">Name</label>
+    <input type="text" id="node-input-name">
+</div>
+
+<div class="form-row">
+    <label for="node-input-subjectCN">Subject CN</label>
+    <input type="text" id="node-input-subjectCN" placeholder="Common Name (CN)">
+</div>
+
+<div class="form-row">
+    <label for="node-input-subjectO">Subject O</label>
+    <input type="text" id="node-input-subjectO" placeholder="Organization (O)">
+</div>
+
+<div class="form-row">
+    <label for="node-input-subjectOU">Subject OU</label>
+    <input type="text" id="node-input-subjectOU" placeholder="Organizational Unit (OU)">
+</div>
+
+<div class="form-row">
+    <label for="node-input-subjectC">Subject C</label>
+    <input type="text" id="node-input-subjectC" placeholder="Country (C)">
+</div>
+
+<div class="form-row">
+    <label for="node-input-subjectST">Subject ST</label>
+    <input type="text" id="node-input-subjectST" placeholder="State/Province (ST)">
+</div>
+
+<div class="form-row">
+    <label for="node-input-subjectL">Subject L</label>
+    <input type="text" id="node-input-subjectL" placeholder="Locality (L)">
+</div>
