@@ -16,14 +16,12 @@ module.exports = function (RED) {
         node.clientKey = config.clientKey;
 
         node.on('input', function (msg) {
-            // 🔗 Get EST URL from msg or fallback
             const estBaseUrl = msg.payload?.estBaseUrl || node.estHost;
             if (!estBaseUrl) {
                 node.error("Missing estBaseUrl in msg.payload or node config.");
                 return;
             }
 
-            // 📄 Get CSR from msg
             const csrInput = msg.payload?.csr || msg.payload;
             if (!csrInput) {
                 node.error("Missing CSR in msg.payload or payload.csr");
@@ -51,7 +49,6 @@ module.exports = function (RED) {
 
             node.status({ fill: "blue", shape: "dot", text: "Sending Enrollment request..." });
 
-            // 🌐 Prepare HTTPS options
             const urlObj = new URL(estBaseUrl);
 
             const options = {
@@ -66,7 +63,6 @@ module.exports = function (RED) {
                 rejectUnauthorized: false
             };
 
-            // 🔐 Use basic auth dynamically or fallback to static config
             const useBasic = msg.payload?.useBasic !== undefined ? msg.payload.useBasic : node.useBasic;
             const username = msg.payload?.username || node.username;
             const password = msg.payload?.password || node.password;
@@ -76,13 +72,11 @@ module.exports = function (RED) {
                 options.headers['Authorization'] = 'Basic ' + Buffer.from(authString).toString('base64');
             }
 
-            // 🔐 mTLS (optional)
             if (node.useMtls && node.clientCert && node.clientKey) {
                 options.cert = node.clientCert;
                 options.key = node.clientKey;
             }
 
-            // 🚀 Send HTTPS request
             const req = https.request(options, (res) => {
                 const chunks = [];
 
@@ -92,13 +86,21 @@ module.exports = function (RED) {
 
                 res.on('end', () => {
                     const body = Buffer.concat(chunks);
-
                     node.status({ fill: "green", shape: "dot", text: `Status: ${res.statusCode}` });
 
-                    msg.payload = body;
+                    try {
+                        const asn1Cert = forge.asn1.fromDer(body.toString('binary'));
+                        const cert = forge.pki.certificateFromAsn1(asn1Cert);
+                        const pemCert = forge.pki.certificateToPem(cert);
+
+                        msg.payload = pemCert;
+                    } catch (err) {
+                        node.warn(`Failed to parse DER cert → passing raw body`);
+                        msg.payload = body;
+                    }
+
                     msg.statusCode = res.statusCode;
                     msg.headers = res.headers;
-
                     node.send(msg);
                 });
             });
