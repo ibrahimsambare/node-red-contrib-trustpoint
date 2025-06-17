@@ -8,11 +8,11 @@ module.exports = function (RED) {
 
         node.on('input', function (msg) {
             const estBaseUrl = msg.payload?.estBaseUrl;
-            const clientCertPem = msg.payload?.cert || config.cert;
-            const clientKeyPem = msg.payload?.key || config.key;
+            const clientCertPem = msg.payload?.clientCert || config.clientCert;
+            const clientKeyPem = msg.payload?.clientKey || config.clientKey;
 
             if (!estBaseUrl || !clientCertPem || !clientKeyPem) {
-                return node.error("Missing estBaseUrl, cert, or key in msg.payload");
+                return node.error("Missing estBaseUrl, clientCert, or clientKey in msg.payload");
             }
 
             try {
@@ -58,7 +58,6 @@ module.exports = function (RED) {
 
                         if (res.statusCode === 200) {
                             try {
-                                // Robust PKCS#7 parsing
                                 const p7asn1 = forge.asn1.fromDer(buffer.toString('binary'));
                                 const p7 = forge.pkcs7.messageFromAsn1(p7asn1);
                                 const pemCerts = p7.certificates.map(cert => forge.pki.certificateToPem(cert));
