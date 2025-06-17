@@ -1,10 +1,12 @@
 const https = require('https');
-const forge = require('node-forge'); // Ajout nécessaire pour conversion PEM → Buffer DER
+const forge = require('node-forge'); // Needed for PEM to DER conversion
 
 module.exports = function (RED) {
     function TrustpointSimpleEnrollNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
+
+        // Static config from the HTML editor
         node.estHost = config.estHost;
         node.useBasic = config.useBasic;
         node.username = config.username;
@@ -14,16 +16,15 @@ module.exports = function (RED) {
         node.clientKey = config.clientKey;
 
         node.on('input', function (msg) {
-            // 🌐 Déterminer l'URL de destination
+            // 🔗 Get EST URL from msg or fallback
             const estBaseUrl = msg.payload?.estBaseUrl || node.estHost;
             if (!estBaseUrl) {
                 node.error("Missing estBaseUrl in msg.payload or node config.");
                 return;
             }
 
-            // 🔍 Préparer le CSR
+            // 📄 Get CSR from msg
             const csrInput = msg.payload?.csr || msg.payload;
-
             if (!csrInput) {
                 node.error("Missing CSR in msg.payload or payload.csr");
                 return;
@@ -50,7 +51,7 @@ module.exports = function (RED) {
 
             node.status({ fill: "blue", shape: "dot", text: "Sending Enrollment request..." });
 
-            // 🌐 Préparer la requête HTTPS
+            // 🌐 Prepare HTTPS options
             const urlObj = new URL(estBaseUrl);
 
             const options = {
@@ -65,19 +66,23 @@ module.exports = function (RED) {
                 rejectUnauthorized: false
             };
 
-            // Auth Basic
-            if (node.useBasic && node.username && node.password) {
-                const authString = `${node.username}:${node.password}`;
+            // 🔐 Use basic auth dynamically or fallback to static config
+            const useBasic = msg.payload?.useBasic !== undefined ? msg.payload.useBasic : node.useBasic;
+            const username = msg.payload?.username || node.username;
+            const password = msg.payload?.password || node.password;
+
+            if (useBasic && username && password) {
+                const authString = `${username}:${password}`;
                 options.headers['Authorization'] = 'Basic ' + Buffer.from(authString).toString('base64');
             }
 
-            // Auth mTLS (future phase 3)
+            // 🔐 mTLS (optional)
             if (node.useMtls && node.clientCert && node.clientKey) {
                 options.cert = node.clientCert;
                 options.key = node.clientKey;
             }
 
-            // 🔄 Envoyer la requête HTTPS
+            // 🚀 Send HTTPS request
             const req = https.request(options, (res) => {
                 const chunks = [];
 
