@@ -205,7 +205,7 @@ node-red-contrib-trustpoint/examples/device-reenrollment-flow.json
 
 ---
 
-🟡 Phase 2 (in progress):
+✅ Phase 2 (completed):
 
 - Prepare Raspberry Pi 5 environment (official OS, SSH, Node-RED installation)
 - Deploy `node-red-contrib-trustpoint` nodeset on Raspberry Pi 5
@@ -214,7 +214,7 @@ node-red-contrib-trustpoint/examples/device-reenrollment-flow.json
 
 ---
 
-🟡 Phase 3 (planned):
+✅ Phase 3 (completed):
 
 - Add and test full mTLS support (client cert + client key for all endpoints)
 - Investigate and resolve `/simplereenroll` HTTP 500 issue
