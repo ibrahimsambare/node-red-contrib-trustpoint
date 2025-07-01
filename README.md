@@ -4,7 +4,7 @@
 Supports full EST device lifecycle management, including secure key generation, CSR creation, certificate enrollment, renewal, storage, and CA retrieval.  
 Designed for industrial and IoT provisioning workflows. Tested on Raspberry Pi 5 for ProductionLab Wall demo.
 
-## ✨ Features
+## Features
 
 - 📌 **Device key generation**  
   Generate RSA or Elliptic Curve (EC) private keys (configurable key size / curve).
