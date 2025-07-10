@@ -258,7 +258,7 @@ Phase 1 — Trustpoint Project (ProductionLab Wall demo)
 2025
 
 GitHub: [https://github.com/ton-profil-github](https://github.com/ton-profil-github)  
-Email: <ton.email.pro@example.com>
+Email: <ibrahim.realmountaka@campus-schwartwald.de>
 
 
 
