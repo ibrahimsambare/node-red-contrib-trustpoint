@@ -1,4 +1,5 @@
 const https = require('https');
+const fs = require('fs');
 const forge = require('node-forge');
 
 module.exports = function (RED) {
@@ -32,32 +33,39 @@ module.exports = function (RED) {
                 res.on('data', d => chunks.push(d));
                 res.on('end', () => {
                     const buffer = Buffer.concat(chunks);
-                    msg.payload = buffer; // Buffer brut (PKCS#7)
 
                     try {
-                        // Parse DER buffer -> PEM certs
-                        const p7asn1 = forge.asn1.fromDer(buffer.toString('binary'));
-                        const p7 = forge.pkcs7.messageFromAsn1(p7asn1);
-                        const certs = p7.certificates.map(cert => forge.pki.certificateToPem(cert));
+                        const outputPath = "/home/pi/.node-red/certs/ca-certs.p7b";
+                        fs.mkdirSync("/home/pi/.node-red/certs", { recursive: true });
+                        fs.writeFileSync(outputPath, buffer);
 
-                        msg.pemCerts = certs;
+                        // Convert PKCS#7 DER → ASN.1
+                        const p7Asn1 = forge.asn1.fromDer(buffer.toString('binary'));
+                        const pkcs7 = forge.pkcs7.messageFromAsn1(p7Asn1);
 
-                        // Aperçu des 10 premières lignes du premier certificat
-                        if (certs.length > 0) {
-                            const lines = certs[0].split('\n');
-                            msg.pemCertsPreview = lines.slice(0, 10).join('\n') + '\n...';
-                        } else {
-                            msg.pemCertsPreview = "No certificates found in PKCS#7 response.";
-                        }
+                        const certs = pkcs7.certificates || [];
+                        const pemCerts = certs.map(c => forge.pki.certificateToPem(c)).join('\n');
 
-                        node.log(`CA certs retrieved (${certs.length} certs, ${buffer.length} bytes)`);
-                    } catch (err) {
-                        msg.pemCerts = null;
-                        msg.pemCertsPreview = "Error parsing PKCS#7 → " + err.message;
-                        node.warn("Failed to parse PKCS#7: " + err.message);
+                        const certInfos = certs.map(cert => ({
+                            subject: cert.subject.attributes.map(attr => ({ name: attr.name, value: attr.value })),
+                            issuer: cert.issuer.attributes.map(attr => ({ name: attr.name, value: attr.value })),
+                            validFrom: cert.validity.notBefore,
+                            validTo: cert.validity.notAfter,
+                            serialNumber: cert.serialNumber
+                        }));
+
+                        msg.payload = {
+                            status: "stored",
+                            path: outputPath
+                        };
+
+                        msg.pemCertsPreview = pemCerts;
+                        msg.caCertInfo = certInfos;
+
+                        node.send(msg);
+                    } catch (e) {
+                        node.error("Failed to parse PKCS7: " + e.message, msg);
                     }
-
-                    node.send(msg);
                 });
             });
 
