@@ -24,7 +24,8 @@
       "trustpoint-simpleenroll": "nodes/trustpoint-simpleenroll.js",
       "trustpoint-simplereenroll": "nodes/trustpoint-simplereenroll.js",
       "trustpoint-cacerts": "nodes/trustpoint-cacerts.js",
-      "trustpoint-store": "nodes/trustpoint-store.js"
+      "trustpoint-store": "nodes/trustpoint-store.js",
+      "store-certificate-ejbca": "nodes/store-certificate-ejbca.js"
     }
   },
   "author": "Ibrahim Almountaka Sambare",
