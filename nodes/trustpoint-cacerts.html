@@ -1,26 +1,66 @@
-<script type="text/javascript">
-  RED.nodes.registerType('trustpoint-cacerts', {
-    category: 'Trustpoint',
-    color: '#d9d9ff',
-    defaults: {
-      name: { value: "" },
-      estUrl: { value: "https://localhost" }
-    },
-    inputs: 1,
-    outputs: 1,
-    icon: "font-awesome/fa-download",
-    label: function () {
-      return this.name || "trustpoint-cacerts";
-    }
-  });
+<script type="text/html" data-template-name="trustpoint-cacerts">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Node name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-estUrl"><i class="fa fa-link"></i> EST Server URL</label>
+        <input type="text" id="node-input-estUrl" placeholder="e.g. https://localhost/.well-known/est/cacerts">
+        <input type="hidden" id="node-input-estUrl_fieldType">
+    </div>
+
+    <div id="cacerts-info" class="validation-result">
+        <div class="validation-box" id="cacerts-info-box">
+            This node retrieves the CA certificate chain (PKCS#7) from an EST server via GET.
+        </div>
+    </div>
+
 </script>
 
-<div class="form-row">
-  <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-  <input type="text" id="node-input-name">
-</div>
+<style>
+    .validation-box {
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: normal;
+    }
 
-<div class="form-row">
-  <label for="node-input-estUrl"><i class="fa fa-link"></i> EST Server URL</label>
-  <input type="text" id="node-input-estUrl" placeholder="e.g. https://192.168.1.100">
-</div>
+    .validation-info {
+        background-color: #4cafaf;
+        color: white;
+    }
+</style>
+
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('trustpoint-cacerts', {
+            category: 'Trustpoint',
+            color: '#d9d9ff',
+            defaults: {
+                name: { value: "" },
+                estUrl: { value: "https://localhost" },
+                estUrl_fieldType: { value: "str" }
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-download",
+            label: function () {
+                return this.name || "trustpoint-cacerts";
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                $("#node-input-estUrl").typedInput({
+                    default: 'str',
+                    types: ['str', 'msg', 'flow', 'global'],
+                    typeField: $("#node-input-estUrl_fieldType")
+                });
+
+                $("#cacerts-info-box").addClass("validation-info");
+            }
+        });
+    })();
+</script>
