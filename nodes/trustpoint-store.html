@@ -1,68 +1,128 @@
-<script type="text/javascript">
-  RED.nodes.registerType('trustpoint-store', {
-    category: 'Trustpoint',
-    color: '#cde498',
-    defaults: {
-      name: { value: "" },
-      operation: { value: "store" },
-      location: { value: "file" },
-      contextScope: { value: "flow" },
-      format: { value: "pem" },
-      key: { value: "default-key" },
-      filePath: { value: "" }
-    },
-    inputs: 1,
-    outputs: 1,
-    icon: "font-awesome/fa-save",
-    label: function () {
-      return this.name || "trustpoint-store";
-    }
-  });
+<script type="text/html" data-template-name="trustpoint-store">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Node name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-operation"><i class="fa fa-cogs"></i> Operation</label>
+        <select id="node-input-operation">
+            <option value="store">Store</option>
+            <option value="retrieve">Retrieve</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-location"><i class="fa fa-database"></i> Storage Location</label>
+        <select id="node-input-location">
+            <option value="file">Filesystem</option>
+            <option value="context">Node-RED Context</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-contextScope"><i class="fa fa-globe"></i> Context Scope</label>
+        <select id="node-input-contextScope">
+            <option value="flow">Flow</option>
+            <option value="global">Global</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-format"><i class="fa fa-file-code-o"></i> Format</label>
+        <select id="node-input-format">
+            <option value="pem">PEM</option>
+            <option value="crt">CRT</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-key"><i class="fa fa-key"></i> Key (context)</label>
+        <input type="text" id="node-input-key" placeholder="context variable name" style="width:250px;">
+        <input type="hidden" id="node-input-key_fieldType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-filePath"><i class="fa fa-folder"></i> File Path</label>
+        <input type="text" id="node-input-filePath" placeholder="/path/to/file.pem" style="width:250px;">
+        <input type="hidden" id="node-input-filePath_fieldType">
+    </div>
+
+    <div id="path-preview" class="validation-result">
+        <div class="validation-box" id="path-preview-box"></div>
+    </div>
+
 </script>
 
-<div class="form-row">
-  <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-  <input type="text" id="node-input-name">
-</div>
+<style>
+    .validation-box {
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: normal;
+    }
 
-<div class="form-row">
-  <label for="node-input-operation">Operation</label>
-  <select id="node-input-operation">
-    <option value="store">Store</option>
-    <option value="retrieve">Retrieve</option>
-  </select>
-</div>
+    .validation-info {
+        background-color: #4cafaf;
+        color: white;
+    }
+</style>
 
-<div class="form-row">
-  <label for="node-input-location">Location</label>
-  <select id="node-input-location">
-    <option value="file">Filesystem</option>
-    <option value="context">Node-RED Context</option>
-  </select>
-</div>
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('trustpoint-store', {
+            category: 'Trustpoint',
+            color: '#cde498',
+            defaults: {
+                name: { value: "" },
+                operation: { value: "store" },
+                location: { value: "file" },
+                contextScope: { value: "flow" },
+                format: { value: "pem" },
+                key: { value: "default-key" },
+                key_fieldType: { value: "str" },
+                filePath: { value: "" },
+                filePath_fieldType: { value: "str" }
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-save",
+            label: function () {
+                return this.name || "trustpoint-store";
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                $("#node-input-key").typedInput({
+                    default: 'str',
+                    types: ['msg', 'str', 'flow', 'global'],
+                    typeField: $("#node-input-key_fieldType")
+                });
 
-<div class="form-row">
-  <label for="node-input-contextScope">Context Scope</label>
-  <select id="node-input-contextScope">
-    <option value="flow">Flow</option>
-    <option value="global">Global</option>
-  </select>
-</div>
+                $("#node-input-filePath").typedInput({
+                    default: 'str',
+                    types: ['msg', 'str', 'flow', 'global'],
+                    typeField: $("#node-input-filePath_fieldType")
+                });
 
-<div class="form-row">
-  <label for="node-input-format">Format</label>
-  <select id="node-input-format">
-    <option value="pem">PEM</option>
-    <option value="crt">CRT</option>
-  </select>
-</div>
+                // Mise à jour du chemin affiché
+                function updatePathPreview() {
+                    const path = $("#node-input-filePath").val();
+                    const box = $("#path-preview-box");
+                    if (path) {
+                        box.text("Target file path: " + path);
+                        box.removeClass("validation-error").addClass("validation-box validation-info");
+                    } else {
+                        box.text("No path defined.");
+                        box.removeClass("validation-info").addClass("validation-box validation-error");
+                    }
+                }
 
-<div class="form-row">
-  <label for="node-input-key">Key (context)</label>
-  <input type="text" id="node-input-key">
-</div>
-
-<div class="form-row">
-  <label for="node-input-filePath">File Path</label>
-  <input type="text" id="node-input-filePath">
-</div>
+                $("#node-input-filePath").on("change", updatePathPreview);
+                updatePathPreview();
+            }
+        });
+    })();
+</script>
