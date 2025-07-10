@@ -1,67 +1,115 @@
-<script type="text/javascript">
-  RED.nodes.registerType('trustpoint-keygen', {
-    category: 'Trustpoint',
-    color: '#d9f2d9',
-    defaults: {
-      name: { value: "" },
-      keyType: { value: "RSA" },
-      keySize: { value: "2048" },
-      ecCurve: { value: "secp256r1" }
-    },
-    inputs: 1,
-    outputs: 1,
-    icon: "font-awesome/fa-key",
-    label: function () {
-      return this.name || "trustpoint-keygen";
-    }
-  });
+<script type="text/html" data-template-name="trustpoint-keygen">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Node name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-algorithm"><i class="fa fa-lock"></i> Key Type</label>
+        <select id="node-input-algorithm">
+            <option value="RSA">RSA</option>
+            <option value="EC">EC</option>
+        </select>
+    </div>
+
+    <div class="form-row" id="rsa-options">
+        <label for="node-input-keySize"><i class="fa fa-shield"></i> Key Size (RSA)</label>
+        <select id="node-input-keySize">
+            <option value="2048">2048</option>
+            <option value="3072">3072</option>
+            <option value="4096">4096</option>
+        </select>
+    </div>
+
+    <div class="form-row" id="ec-options">
+        <label for="node-input-ecCurve"><i class="fa fa-cube"></i> EC Curve</label>
+        <select id="node-input-ecCurve">
+            <option value="prime256v1">prime256v1</option>
+            <option value="secp384r1">secp384r1</option>
+            <option value="secp521r1">secp521r1</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-persist"><i class="fa fa-save"></i> Persist to file</label>
+        <input type="checkbox" id="node-input-persist" style="width:auto;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-filenamePrefix"><i class="fa fa-file-text-o"></i> Filename Prefix</label>
+        <input type="text" id="node-input-filenamePrefix" placeholder="keypair">
+        <input type="hidden" id="node-input-filenamePrefix_fieldType">
+    </div>
+
+    <div id="keygen-info" class="validation-result">
+        <div class="validation-box" id="keygen-info-box">
+            This node generates RSA or EC keypairs and optionally saves them to disk.
+        </div>
+    </div>
+
 </script>
 
-<div class="form-row">
-  <label for="node-input-name">Name</label>
-  <input type="text" id="node-input-name">
-</div>
-
-<div class="form-row">
-  <label for="node-input-keyType">Key Type</label>
-  <select id="node-input-keyType">
-    <option value="RSA">RSA</option>
-    <option value="EC">EC</option>
-  </select>
-</div>
-
-<div class="form-row" id="rsa-options">
-  <label for="node-input-keySize">Key Size (for RSA)</label>
-  <select id="node-input-keySize">
-    <option value="2048">2048</option>
-    <option value="3072">3072</option>
-    <option value="4096">4096</option>
-  </select>
-</div>
-
-<div class="form-row" id="ec-options">
-  <label for="node-input-ecCurve">EC Curve (for EC)</label>
-  <select id="node-input-ecCurve">
-    <option value="secp256r1">secp256r1</option>
-    <option value="secp384r1">secp384r1</option>
-    <option value="secp521r1">secp521r1</option>
-  </select>
-</div>
-
-<script type="text/javascript">
-  (function() {
-    function toggleOptions() {
-      var keyType = $("#node-input-keyType").val();
-      if (keyType === "RSA") {
-        $("#rsa-options").show();
-        $("#ec-options").hide();
-      } else if (keyType === "EC") {
-        $("#rsa-options").hide();
-        $("#ec-options").show();
-      }
+<style>
+    .validation-box {
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: normal;
     }
 
-    $("#node-input-keyType").change(toggleOptions);
-    toggleOptions();
-  })();
+    .validation-info {
+        background-color: #4cafaf;
+        color: white;
+    }
+</style>
+
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('trustpoint-keygen', {
+            category: 'Trustpoint',
+            color: '#d9f2d9',
+            defaults: {
+                name: { value: "" },
+                algorithm: { value: "RSA" },
+                keySize: { value: "2048" },
+                ecCurve: { value: "prime256v1" },
+                persist: { value: false },
+                filenamePrefix: { value: "keypair" },
+                filenamePrefix_fieldType: { value: "str" }
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-key",
+            label: function () {
+                return this.name || "trustpoint-keygen";
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                $("#node-input-filenamePrefix").typedInput({
+                    default: 'str',
+                    types: ['str', 'msg'],
+                    typeField: $("#node-input-filenamePrefix_fieldType")
+                });
+
+                function toggleOptions() {
+                    const algo = $("#node-input-algorithm").val();
+                    if (algo === "RSA") {
+                        $("#rsa-options").show();
+                        $("#ec-options").hide();
+                    } else {
+                        $("#rsa-options").hide();
+                        $("#ec-options").show();
+                    }
+                }
+
+                $("#node-input-algorithm").on("change", toggleOptions);
+                toggleOptions();
+
+                $("#keygen-info-box").addClass("validation-info");
+            }
+        });
+    })();
 </script>
