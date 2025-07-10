@@ -64,7 +64,7 @@ While the package is not yet published, you can install it manually from source:
 
 ```bash
 cd ~/.node-red
-git clone <your-github-repo-url> node-red-contrib-trustpoint
+git clone <https://github.com/ibrahimsambare/node-red-contrib-trustpoint.git> node-red-contrib-trustpoint
 cd node-red-contrib-trustpoint
 npm install
 ```
