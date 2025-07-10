@@ -1,56 +1,90 @@
-<script type="text/javascript">
-    RED.nodes.registerType('trustpoint-create-csr', {
-        category: 'Trustpoint',
-        color: '#b3d9ff',
-        defaults: {
-            name: { value: "" },
-            subjectCN: { value: "" },
-            subjectO: { value: "" },
-            subjectOU: { value: "" },
-            subjectC: { value: "" },
-            subjectST: { value: "" },
-            subjectL: { value: "" }
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "font-awesome/fa-certificate",
-        label: function () {
-            return this.name || "trustpoint-create-csr";
-        }
-    });
+<script type="text/html" data-template-name="trustpoint-create-csr">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Node name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-privateKey"><i class="fa fa-key"></i> Private Key (PEM)</label>
+        <input type="text" id="node-input-privateKey" placeholder="msg.payload.privateKey or inline PEM">
+        <input type="hidden" id="node-input-privateKey_fieldType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-cn"><i class="fa fa-user-circle"></i> Common Name (CN)</label>
+        <input type="text" id="node-input-cn" placeholder="example.com">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-o"><i class="fa fa-building-o"></i> Organization (O)</label>
+        <input type="text" id="node-input-o" placeholder="Organization (optional)">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-ou"><i class="fa fa-sitemap"></i> Organizational Unit (OU)</label>
+        <input type="text" id="node-input-ou" placeholder="Unit (optional)">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-san"><i class="fa fa-globe"></i> Subject Alt Names (SAN)</label>
+        <input type="text" id="node-input-san" placeholder="Comma-separated: domain.com, 1.2.3.4">
+    </div>
+
+    <div id="csr-info" class="validation-result">
+        <div class="validation-box" id="csr-info-box">
+            This node generates a Certificate Signing Request (CSR) from a private key and subject info.
+        </div>
+    </div>
+
 </script>
 
-<div class="form-row">
-    <label for="node-input-name">Name</label>
-    <input type="text" id="node-input-name">
-</div>
+<style>
+    .validation-box {
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: normal;
+    }
 
-<div class="form-row">
-    <label for="node-input-subjectCN">Subject CN</label>
-    <input type="text" id="node-input-subjectCN" placeholder="Common Name (CN)">
-</div>
+    .validation-info {
+        background-color: #4cafaf;
+        color: white;
+    }
+</style>
 
-<div class="form-row">
-    <label for="node-input-subjectO">Subject O</label>
-    <input type="text" id="node-input-subjectO" placeholder="Organization (O)">
-</div>
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('trustpoint-create-csr', {
+            category: 'Trustpoint',
+            color: '#b3d9ff',
+            defaults: {
+                name: { value: "" },
+                privateKey: { value: "" },
+                privateKey_fieldType: { value: "str" },
+                cn: { value: "" },
+                o: { value: "" },
+                ou: { value: "" },
+                san: { value: "" }
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-certificate",
+            label: function () {
+                return this.name || "trustpoint-create-csr";
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                $("#node-input-privateKey").typedInput({
+                    default: 'str',
+                    types: ['str', 'msg', 'flow', 'global'],
+                    typeField: $("#node-input-privateKey_fieldType")
+                });
 
-<div class="form-row">
-    <label for="node-input-subjectOU">Subject OU</label>
-    <input type="text" id="node-input-subjectOU" placeholder="Organizational Unit (OU)">
-</div>
-
-<div class="form-row">
-    <label for="node-input-subjectC">Subject C</label>
-    <input type="text" id="node-input-subjectC" placeholder="Country (C)">
-</div>
-
-<div class="form-row">
-    <label for="node-input-subjectST">Subject ST</label>
-    <input type="text" id="node-input-subjectST" placeholder="State/Province (ST)">
-</div>
-
-<div class="form-row">
-    <label for="node-input-subjectL">Subject L</label>
-    <input type="text" id="node-input-subjectL" placeholder="Locality (L)">
-</div>
+                $("#csr-info-box").addClass("validation-info");
+            }
+        });
+    })();
+</script>
