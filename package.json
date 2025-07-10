@@ -25,7 +25,8 @@
       "trustpoint-simplereenroll": "nodes/trustpoint-simplereenroll.js",
       "trustpoint-cacerts": "nodes/trustpoint-cacerts.js",
       "trustpoint-store": "nodes/trustpoint-store.js",
-      "store-certificate": "lib/store-certificate.js"  
+      "store-certificate": "nodes/store-certificate.js"
+    }
   },
   "author": "Ibrahim Almountaka Sambare",
   "license": "MIT"
