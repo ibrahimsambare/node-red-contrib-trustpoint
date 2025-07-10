@@ -75,7 +75,7 @@ node-red-start
 ```
 Or if running in development:
 ```bash
-git clone https://github.com/your-username/node-red-contrib-trustpoint.git
+git clone https://github.com/ibrahimsambare/node-red-contrib-trustpoint.git
 cd node-red-contrib-trustpoint
 npm install
 npm link
@@ -84,7 +84,12 @@ npm link node-red-contrib-trustpoint
 ```
 Then restart Node-RED.
 
+```bash
+node-red-restart
+```
+
 → After restart, the Trustpoint nodes will be available in the Node-RED palette.
+
 
 ## Example Flows
 
