@@ -52,5 +52,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType('store-certificate-ejbca', StoreCertificateNode);
+    RED.nodes.registerType('store-certificate', StoreCertificateNode);
 };
