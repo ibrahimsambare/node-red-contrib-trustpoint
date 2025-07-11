@@ -7,54 +7,48 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        node.on('input', function (msg, send, done) {
-            const algorithm = config.algorithm || msg.algorithm || 'RSA';
-            const keySize = parseInt(config.keySize || msg.keySize || '2048', 10);
-            const curve = config.ecCurve || msg.ecCurve || 'prime256v1';
-            const persist = config.persist === true || msg.persist === true;
-            const filenamePrefix = config.filenamePrefix || msg.filenamePrefix || 'keypair';
+        node.on('input', function (msg) {
+            // Config depuis .html ou msg
+            const algorithm = msg.algorithm || config.algorithm || 'RSA';
+            const keySize = parseInt(msg.keySize || config.keySize || '2048', 10);
+            const ecCurve = msg.ecCurve || config.ecCurve || 'prime256v1';
+            const persist = msg.persist !== undefined ? msg.persist : config.persist;
+            const filenamePrefix = msg.filenamePrefix || config.filenamePrefix || 'keypair';
+
+            let privateKeyPem, publicKeyPem;
 
             try {
-                let privateKey, publicKey;
-                let privateKeyPem, publicKeyPem;
-
+                // Génération des clés
                 if (algorithm === 'RSA') {
                     const keys = forge.pki.rsa.generateKeyPair(keySize);
-                    privateKey = keys.privateKey;
-                    publicKey = keys.publicKey;
-                    privateKeyPem = forge.pki.privateKeyToPem(privateKey);
-                    publicKeyPem = forge.pki.publicKeyToPem(publicKey);
+                    privateKeyPem = forge.pki.privateKeyToPem(keys.privateKey);
+                    publicKeyPem = forge.pki.publicKeyToPem(keys.publicKey);
                 } else if (algorithm === 'EC' || algorithm === 'ECC') {
-                    const ec = forge.pki.ec;
-                    const keys = ec.generateKeyPair({ namedCurve: curve });
-                    privateKey = keys.privateKey;
-                    publicKey = keys.publicKey;
-                    privateKeyPem = forge.pki.privateKeyToPem(privateKey);
-                    publicKeyPem = forge.pki.publicKeyToPem(publicKey);
+                    const keypair = forge.pki.ec.generateKeyPair({ namedCurve: ecCurve });
+                    privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey);
+                    publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
                 } else {
-                    return done(new Error(`Unsupported algorithm: ${algorithm}`));
+                    return node.error(`❌ Unsupported algorithm: ${algorithm}`);
                 }
 
+                // Option de persistance
                 if (persist) {
-                    const dir = path.join(__dirname, '..', 'keys');
-                    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+                    const dir = path.join(RED.settings.userDir || '.', 'keys');
+                    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
                     fs.writeFileSync(path.join(dir, `${filenamePrefix}_private.pem`), privateKeyPem);
                     fs.writeFileSync(path.join(dir, `${filenamePrefix}_public.pem`), publicKeyPem);
                 }
 
-                // ➕ Ajout de la logique de nettoyage du deviceId
-                const rawDeviceId = msg.deviceId || config.deviceId || "default";
-                const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
-                const filePath = `/home/pi/.node-red/keys/${sanitizedDeviceId}-key.pem`;
+                // Construction du message de sortie
+                msg.payload = {
+                    algorithm,
+                    privateKey: privateKeyPem,
+                    publicKey: publicKeyPem
+                };
 
-                msg.filePath = filePath;
-                msg.privateKeyObject = privateKey;
-                msg.payload = privateKeyPem;
-
-                send(msg);
-                done();
+                node.send(msg);
             } catch (err) {
-                done(new Error(`Key generation failed: ${err.message}`));
+                node.error(`❌ Key generation failed: ${err.message}`, msg);
             }
         });
     }
