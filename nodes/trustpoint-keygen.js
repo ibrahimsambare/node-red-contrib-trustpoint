@@ -7,27 +7,32 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        node.on('input', function (msg) {
+        node.on('input', function (msg, send, done) {
             const algorithm = config.algorithm || msg.algorithm || 'RSA';
             const keySize = parseInt(config.keySize || msg.keySize || '2048', 10);
             const curve = config.ecCurve || msg.ecCurve || 'prime256v1';
             const persist = config.persist === true || msg.persist === true;
             const filenamePrefix = config.filenamePrefix || msg.filenamePrefix || 'keypair';
 
-            let privateKeyPem, publicKeyPem;
-
             try {
+                let privateKey, publicKey;
+                let privateKeyPem, publicKeyPem;
+
                 if (algorithm === 'RSA') {
                     const keys = forge.pki.rsa.generateKeyPair(keySize);
-                    privateKeyPem = forge.pki.privateKeyToPem(keys.privateKey);
-                    publicKeyPem = forge.pki.publicKeyToPem(keys.publicKey);
+                    privateKey = keys.privateKey;
+                    publicKey = keys.publicKey;
+                    privateKeyPem = forge.pki.privateKeyToPem(privateKey);
+                    publicKeyPem = forge.pki.publicKeyToPem(publicKey);
                 } else if (algorithm === 'EC' || algorithm === 'ECC') {
                     const ec = forge.pki.ec;
-                    const keypair = ec.generateKeyPair({namedCurve: curve});
-                    privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey);
-                    publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
+                    const keys = ec.generateKeyPair({ namedCurve: curve });
+                    privateKey = keys.privateKey;
+                    publicKey = keys.publicKey;
+                    privateKeyPem = forge.pki.privateKeyToPem(privateKey);
+                    publicKeyPem = forge.pki.publicKeyToPem(publicKey);
                 } else {
-                    return node.error(`Unsupported algorithm: ${algorithm}`);
+                    return done(new Error(`Unsupported algorithm: ${algorithm}`));
                 }
 
                 if (persist) {
@@ -37,15 +42,19 @@ module.exports = function (RED) {
                     fs.writeFileSync(path.join(dir, `${filenamePrefix}_public.pem`), publicKeyPem);
                 }
 
-                msg.payload = {
-                    algorithm,
-                    privateKey: privateKeyPem,
-                    publicKey: publicKeyPem
-                };
+                // ➕ Ajout de la logique de nettoyage du deviceId
+                const rawDeviceId = msg.deviceId || config.deviceId || "default";
+                const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
+                const filePath = `/home/pi/.node-red/keys/${sanitizedDeviceId}-key.pem`;
 
-                node.send(msg);
+                msg.filePath = filePath;
+                msg.privateKeyObject = privateKey;
+                msg.payload = privateKeyPem;
+
+                send(msg);
+                done();
             } catch (err) {
-                node.error(`Key generation failed: ${err.message}`, msg);
+                done(new Error(`Key generation failed: ${err.message}`));
             }
         });
     }
