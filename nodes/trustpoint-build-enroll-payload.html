@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    RED.nodes.registerType('trustpoint-build-enroll-payload', {
+        category: 'Trustpoint',
+        color: '#FFD700',
+        defaults: {
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-paper-plane",
+        label: function () {
+            return this.name || "trustpoint-build-enroll-payload";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="trustpoint-build-enroll-payload">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <p>
+        Construit l'objet <code>msg.payload</code> à envoyer pour l'enrôlement EST, en injectant le CSR DER et les identifiants.
+    </p>
+</script>
+
+<script type="text/x-red" data-help-name="trustpoint-build-enroll-payload">
+    <p>
+        Ce nœud prend <code>msg.estBaseUrl</code>, <code>msg.estUsername</code>, <code>msg.estPassword</code> et un CSR au format DER, puis prépare l’objet <code>msg.payload</code> attendu par le nœud <code>trustpoint-simpleenroll</code>.
+    </p>
+</script>
