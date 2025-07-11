@@ -25,7 +25,11 @@
       "trustpoint-simplereenroll": "nodes/trustpoint-simplereenroll.js",
       "trustpoint-cacerts": "nodes/trustpoint-cacerts.js",
       "trustpoint-store": "nodes/trustpoint-store.js",
-      "store-certificate": "nodes/store-certificate.js"
+      "trustpoint-analyze-cert": "nodes/trustpoint-analyze-cert.js",
+      "trustpoint-build-enroll-payload": "nodes/trustpoint-build-enroll-payload.js",
+      "trustpoint-prepare-keystore": "nodes/trustpoint-prepare-keystore.js",
+      "trustpoint-prep-csr": "nodes/trustpoint-prep-csr.js",
+      "trustpoint-sanitize-store-key": "nodes/trustpoint-sanitize-store-key.js"
     }
   },
   "author": "Ibrahim Almountaka Sambare",
