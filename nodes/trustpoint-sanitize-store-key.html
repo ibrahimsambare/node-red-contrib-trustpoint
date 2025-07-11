@@ -1,0 +1,32 @@
+<script type="text/javascript">
+    RED.nodes.registerType('trustpoint-sanitize-store-key', {
+        category: 'Trustpoint',
+        color: '#D8BFD8',
+        defaults: {
+            name: { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-key",
+        label: function () {
+            return this.name || "trustpoint-sanitize-store-key";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="trustpoint-sanitize-store-key">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <p>
+        Nettoie l'ID du device pour l'utiliser en nom de fichier et prépare la clé privée pour l'enregistrement.
+    </p>
+</script>
+
+<script type="text/x-red" data-help-name="trustpoint-sanitize-store-key">
+    <p>
+        Ce nœud nettoie l'identifiant du device (<code>msg.deviceId</code>) et génère un chemin de stockage <code>msg.filePath</code> sécurisé.
+        Il extrait et assigne également <code>msg.privateKeyObject</code> et <code>msg.payload</code> à partir de la clé privée au format PEM.
+    </p>
+</script>
