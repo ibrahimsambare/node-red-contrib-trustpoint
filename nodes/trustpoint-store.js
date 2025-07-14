@@ -7,12 +7,12 @@ module.exports = function(RED) {
 
         node.on('input', function(msg) {
             try {
-                const { deviceId, privateKey, publicKey } = msg.payload;
-
-                if (!deviceId || !privateKey || !publicKey) {
-                    node.error("Missing deviceId, privateKey or publicKey in msg.payload", msg);
+                if (!msg.payload || !msg.payload.deviceId || !msg.payload.privateKey || !msg.payload.publicKey) {
+                    node.error("Missing or invalid payload: deviceId, privateKey, or publicKey", msg);
                     return;
                 }
+
+                const { deviceId, privateKey, publicKey } = msg.payload;
 
                 const folderPath = `${RED.settings.userDir}/keys`;
                 if (!fs.existsSync(folderPath)) {
