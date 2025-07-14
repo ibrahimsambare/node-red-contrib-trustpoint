@@ -8,6 +8,14 @@ module.exports = function (RED) {
         const node = this;
 
         node.on('input', function (msg, send, done) {
+            // 🔄 Extraction des champs du formulaire si présents dans msg.payload
+            if (msg.payload && typeof msg.payload === 'object') {
+                msg.deviceId = msg.payload.deviceId || msg.deviceId;
+                msg.estUsername = msg.payload.estUsername || msg.estUsername;
+                msg.estPassword = msg.payload.estPassword || msg.estPassword;
+                delete msg.payload;
+            }
+
             const algorithm = config.algorithm || msg.algorithm || 'RSA';
             const keySize = parseInt(config.keySize || msg.keySize || '2048', 10);
             const curve = config.ecCurve || msg.ecCurve || 'prime256v1';
@@ -46,7 +54,6 @@ module.exports = function (RED) {
                 const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
                 const filePath = `/home/pi/.node-red/keys/${sanitizedDeviceId}-key.pem`;
 
-                // ➕ Champs transmis pour la suite
                 msg.deviceId = sanitizedDeviceId;
                 msg.privateKey = privateKeyPem;
                 msg.publicKey = publicKeyPem;
