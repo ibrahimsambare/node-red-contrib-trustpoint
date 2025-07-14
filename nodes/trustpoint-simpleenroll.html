@@ -42,6 +42,13 @@
         <input type="hidden" id="node-input-clientKey_fieldType">
     </div>
 
+    <div class="form-row">
+        <label for="node-input-rejectUnauthorized">
+            <input type="checkbox" id="node-input-rejectUnauthorized" style="width:auto;" checked>
+            Reject self-signed certificates (recommended)
+        </label>
+    </div>
+
     <div id="enroll-preview" class="validation-result">
         <div class="validation-box" id="enroll-preview-box">
             This node sends a CSR to the EST server using SimpleEnroll. Provide `msg.payload` with a valid CSR (Buffer or PEM string).
@@ -79,7 +86,8 @@
                 clientCert: { value: "" },
                 clientCert_fieldType: { value: "str" },
                 clientKey: { value: "" },
-                clientKey_fieldType: { value: "str" }
+                clientKey_fieldType: { value: "str" },
+                rejectUnauthorized: { value: true }
             },
             inputs: 1,
             outputs: 1,
@@ -103,7 +111,6 @@
                     typeField: $("#node-input-clientKey_fieldType")
                 });
 
-                // Gestion de l'affichage conditionnel
                 function toggleAuthFields() {
                     const useBasic = $("#node-input-useBasic").is(":checked");
                     $("#node-input-username").prop("disabled", !useBasic);
