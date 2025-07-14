@@ -1,25 +1,24 @@
-module.exports = function (RED) {
-    function TrustpointPrepCSRNode(config) {
+module.exports = function(RED) {
+    function TrustpointPrepCsr(config) {
         RED.nodes.createNode(this, config);
-        const node = this;
+        var node = this;
 
-        node.on("input", function (msg) {
-            try {
-                if (!msg.privateKeyObject) {
-                    node.error("msg.privateKeyObject is missing.");
-                    return;
-                }
-
-                msg.payload = {
-                    privateKey: msg.privateKeyObject
-                };
-
-                node.send(msg);
-            } catch (err) {
-                node.error("❌ Failed to prepare key for CSR: " + err.message, msg);
+        node.on('input', function(msg) {
+            if (!msg.deviceId || !msg.privateKey) {
+                node.error("Missing deviceId or privateKey in msg", msg);
+                return;
             }
+
+            node.log(`[Prep CSR] Device: ${msg.deviceId}`);
+            node.log(`[Prep CSR] privateKey size: ${msg.privateKey.length} chars`);
+
+            msg.keystore = {
+                deviceId: msg.deviceId,
+                privateKey: msg.privateKey
+            };
+
+            node.send(msg);
         });
     }
-
-    RED.nodes.registerType("trustpoint-prep-csr", TrustpointPrepCSRNode);
-};
+    RED.nodes.registerType("trustpoint-prep-csr", TrustpointPrepCsr);
+}
