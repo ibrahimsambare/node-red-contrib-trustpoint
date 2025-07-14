@@ -11,6 +11,11 @@ module.exports = function(RED) {
                 const deviceId = msg.payload.deviceId;
                 const certificate = msg.payload.certificate;
 
+                if (!deviceId || !certificate) {
+                    node.error("Missing deviceId or certificate in msg.payload", msg);
+                    return;
+                }
+
                 const filePath = path.join("/home/pi/.node-red/certs", `${deviceId}-cert.pem`);
                 fs.writeFileSync(filePath, certificate);
 
