@@ -12,9 +12,8 @@ module.exports = function (RED) {
             const format = config.format || msg.format || 'pem';
             const key = config.key || msg.key || 'default-key';
 
-            // CORRECTION : msg.filePath en priorité
+            // Utiliser msg.filePath en priorité
             const filePath = msg.filePath || config.filePath;
-
             const content = msg.payload;
 
             if (!content && operation === 'store') {
@@ -29,11 +28,12 @@ module.exports = function (RED) {
                         const dir = path.dirname(filePath);
                         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-                        // Buffer → stocké binaire ; String → en utf-8
                         fs.writeFileSync(filePath, content, Buffer.isBuffer(content) ? undefined : 'utf-8');
 
                         node.log(`Stored content to ${filePath}`);
-                        msg.payload = { status: 'stored', path: filePath }; // résultat
+
+                        // ✅ NE PAS ÉCRASER msg.payload
+                        msg.storeStatus = { status: 'stored', path: filePath };
                     } else if (operation === 'retrieve') {
                         if (!fs.existsSync(filePath)) return node.error(`File not found: ${filePath}`);
 
@@ -50,7 +50,7 @@ module.exports = function (RED) {
 
                     if (operation === 'store') {
                         context.set(key, content);
-                        msg.payload = { status: 'stored', scope: target, key };
+                        msg.storeStatus = { status: 'stored', scope: target, key };
                     } else if (operation === 'retrieve') {
                         const stored = context.get(key);
                         if (!stored) return node.error(`Key not found in ${target} context`);
@@ -63,7 +63,7 @@ module.exports = function (RED) {
                     return node.error("Invalid storage location");
                 }
 
-                node.send(msg); // envoie le message
+                node.send(msg);
 
             } catch (err) {
                 node.error(`trustpoint-store error: ${err.message}`, msg);
@@ -73,4 +73,3 @@ module.exports = function (RED) {
 
     RED.nodes.registerType("trustpoint-store", TrustpointStoreNode);
 };
-
