@@ -3,27 +3,26 @@ const forge = require('node-forge');
 module.exports = function(RED) {
     function TrustpointCreateCsr(config) {
         RED.nodes.createNode(this, config);
-        var node = this;
+        const node = this;
 
         node.on('input', function(msg) {
             try {
-                const deviceId = msg.keystore.deviceId;
-                const privateKeyPem = msg.keystore.privateKey;
+                const { deviceId, privateKey, publicKey } = msg.keystore;
 
-                if (!deviceId || !privateKeyPem) {
-                    node.error("Missing deviceId or privateKey in msg.keystore", msg);
+                if (!deviceId || !privateKey || !publicKey) {
+                    node.error("Missing deviceId, privateKey or publicKey in msg.keystore", msg);
                     return;
                 }
 
-                const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+                const privateKeyObj = forge.pki.privateKeyFromPem(privateKey);
+                const publicKeyObj = forge.pki.publicKeyFromPem(publicKey);
 
                 const csr = forge.pki.createCertificationRequest();
-                csr.publicKey = forge.pki.setRsaPublicKey(privateKey.n, privateKey.e); // ⚠️ ou passer la vraie publicKey
-                csr.setSubject([{
-                    name: 'commonName',
-                    value: deviceId
-                }]);
-                csr.sign(privateKey);
+                csr.publicKey = publicKeyObj;
+                csr.setSubject([
+                    { name: 'commonName', value: deviceId }
+                ]);
+                csr.sign(privateKeyObj);
 
                 const csrDer = forge.asn1.toDer(forge.pki.certificationRequestToAsn1(csr)).getBytes();
                 msg.payload = {
@@ -38,4 +37,4 @@ module.exports = function(RED) {
     }
 
     RED.nodes.registerType("trustpoint-create-csr", TrustpointCreateCsr);
-}
+};
