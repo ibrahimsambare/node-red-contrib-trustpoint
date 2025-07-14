@@ -1,33 +1,34 @@
-const path = require('path');
+const forge = require('node-forge');
 
 module.exports = function (RED) {
-    function TrustpointPrepareKeyStore(config) {
+    function TrustpointPrepareKeystore(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
         node.on('input', function (msg) {
             try {
-                if (!msg.deviceId || !msg.privateKey || !msg.publicKey) {
-                    node.error("Missing deviceId, privateKey or publicKey in msg", msg);
-                    return;
-                }
+                const deviceId = msg.deviceId;
+                const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048 });
 
-                const sanitizedId = msg.deviceId.replace(/[^a-zA-Z0-9_-]/g, '');
-                const keyPath = `/home/pi/.node-red/keys/${sanitizedId}-key.pem`;
+                const privateKeyPem = forge.pki.privateKeyToPem(keypair.privateKey);
+                const publicKeyPem = forge.pki.publicKeyToPem(keypair.publicKey);
 
-                msg.filePath = keyPath;
                 msg.keystore = {
-                    deviceId: sanitizedId,
-                    privateKey: msg.privateKey,
-                    publicKey: msg.publicKey
+                    deviceId: deviceId,
+                    privateKey: privateKeyPem,
+                    publicKey: publicKeyPem
                 };
+
+                // ✅ Ajout nécessaire pour permettre au node `trustpoint-store` de fonctionner
+                msg.payload = msg.payload || {};
+                msg.payload.deviceId = deviceId;
 
                 node.send(msg);
             } catch (err) {
-                node.error(`❌ Failed to prepare keystore: ${err.message}`, msg);
+                node.error("Keystore preparation failed: " + err.message, msg);
             }
         });
     }
 
-    RED.nodes.registerType("trustpoint-prepare-keystore", TrustpointPrepareKeyStore);
+    RED.nodes.registerType("trustpoint-prepare-keystore", TrustpointPrepareKeystore);
 };
