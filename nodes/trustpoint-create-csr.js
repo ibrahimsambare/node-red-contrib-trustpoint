@@ -24,10 +24,8 @@ module.exports = function(RED) {
                 ]);
                 csr.sign(privateKeyObj);
 
-                const csrDer = forge.asn1.toDer(forge.pki.certificationRequestToAsn1(csr)).getBytes();
-                msg.payload = {
-                    csrDer: Buffer.from(csrDer, 'binary')
-                };
+                // ✅ Le node d'enrollment attend directement un PEM string
+                msg.payload = forge.pki.certificationRequestToPem(csr);
 
                 node.send(msg);
             } catch (err) {
