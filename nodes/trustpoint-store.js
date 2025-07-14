@@ -1,51 +1,45 @@
 const fs = require('fs');
-const path = require('path');
 
-module.exports = function (RED) {
-    function TrustpointStoreNode(config) {
+module.exports = function(RED) {
+    function TrustpointStore(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        node.on('input', function (msg) {
-            const operation = config.operation || msg.operation || 'store';
-            const location = config.location || msg.location || 'file';
-            const format = config.format || msg.format || 'pem';
-            const key = config.key || msg.key || 'default-key';
-
-            // 🟢 Conserve le keystore et deviceId dans le msg
-            const keystore = msg.keystore;
-            const deviceId = msg.deviceId;
-
-            // 🟢 Corrigé : utilise msg.filePath (sinon config.filePath)
-            const filePath = msg.filePath || config.filePath;
-            const content = msg.payload;
-
-            if (!content && operation === 'store') {
-                return node.error("No content provided in msg.payload");
-            }
-
+        node.on('input', function(msg) {
             try {
-                if (location === 'file') {
-                    if (!filePath) return node.error("No filePath provided for file storage");
+                const { deviceId, privateKey, publicKey } = msg.payload;
 
-                    if (operation === 'store') {
-                        const dir = path.dirname(filePath);
-                        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+                if (!deviceId || !privateKey || !publicKey) {
+                    node.error("Missing deviceId, privateKey or publicKey in msg.payload", msg);
+                    return;
+                }
 
-                        fs.writeFileSync(filePath, content, Buffer.isBuffer(content) ? undefined : 'utf-8');
+                const folderPath = `${RED.settings.userDir}/keys`;
+                if (!fs.existsSync(folderPath)) {
+                    fs.mkdirSync(folderPath, { recursive: true });
+                }
 
-                        node.log(`✅ Stored content to ${filePath}`);
-                        msg.payload = { status: 'stored', path: filePath };
-                    } else if (operation === 'retrieve') {
-                        if (!fs.existsSync(filePath)) return node.error(`File not found: ${filePath}`);
+                const privKeyPath = `${folderPath}/${deviceId}-key.pem`;
+                const pubKeyPath = `${folderPath}/${deviceId}-pub.pem`;
 
-                        const fileContent = fs.readFileSync(filePath, 'utf-8');
-                        msg.payload = fileContent;
-                        node.log(`📤 Retrieved content from ${filePath}`);
-                    } else {
-                        return node.error("Unsupported operation");
-                    }
+                fs.writeFileSync(privKeyPath, privateKey);
+                fs.writeFileSync(pubKeyPath, publicKey);
 
-                } else if (location === 'context') {
-                    const target = config.contextScope || 'flow';
-                    const context = (target === 'flow') ? node.context().flow : node.context().global;
+                msg.keystore = {
+                    deviceId,
+                    privateKey,
+                    publicKey,
+                    privateKeyPath: privKeyPath,
+                    publicKeyPath: pubKeyPath
+                };
+
+                msg.payload = { status: "stored", path: privKeyPath };
+                node.send(msg);
+            } catch (err) {
+                node.error("Storage failed: " + err.message, msg);
+            }
+        });
+    }
+
+    RED.nodes.registerType("trustpoint-store", TrustpointStore);
+};
