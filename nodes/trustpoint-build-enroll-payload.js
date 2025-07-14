@@ -5,26 +5,30 @@ module.exports = function (RED) {
 
         node.on('input', function (msg) {
             try {
-                // Vérifications
-                if (!msg.payload || !msg.payload.csrDer) {
-                    node.error("Missing CSR DER in msg.payload.csrDer", msg);
+                // ✅ Vérifier que le CSR en DER est présent
+                const csrDer = msg.payload?.csrDer;
+                if (!csrDer || !Buffer.isBuffer(csrDer)) {
+                    node.error("Missing or invalid CSR DER in msg.payload.csrDer", msg);
                     return;
                 }
 
-                if (!msg.keystore || !msg.keystore.estUsername || !msg.keystore.estPassword) {
+                // ✅ Vérifier que les identifiants EST sont présents
+                const estUsername = msg.keystore?.estUsername;
+                const estPassword = msg.keystore?.estPassword;
+
+                if (!estUsername || !estPassword) {
                     node.error("Missing EST credentials (estUsername or estPassword) in msg.keystore", msg);
                     return;
                 }
 
-                // Construction de la requête HTTP
+                // ✅ Préparation des headers pour la requête HTTP
                 msg.headers = {
                     "Content-Type": "application/pkcs10",
-                    "Authorization": "Basic " + Buffer.from(
-                        `${msg.keystore.estUsername}:${msg.keystore.estPassword}`
-                    ).toString("base64")
+                    "Authorization": "Basic " + Buffer.from(`${estUsername}:${estPassword}`).toString("base64")
                 };
 
-                msg.payload = msg.payload.csrDer; // le corps de la requête est le DER binaire
+                // ✅ On transmet uniquement le CSR DER brut dans msg.payload
+                msg.payload = csrDer;
 
                 node.send(msg);
             } catch (err) {
