@@ -35,12 +35,18 @@ module.exports = function (RED) {
                     return done(new Error(`Unsupported algorithm: ${algorithm}`));
                 }
 
-                // ➕ Ajout de la logique de nettoyage du deviceId
+                if (persist) {
+                    const dir = path.join(__dirname, '..', 'keys');
+                    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+                    fs.writeFileSync(path.join(dir, `${filenamePrefix}_private.pem`), privateKeyPem);
+                    fs.writeFileSync(path.join(dir, `${filenamePrefix}_public.pem`), publicKeyPem);
+                }
+
                 const rawDeviceId = msg.deviceId || config.deviceId || "default";
                 const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
                 const filePath = `/home/pi/.node-red/keys/${sanitizedDeviceId}-key.pem`;
 
-                // 📤 Ajout des champs nécessaires à la suite du flow
+                // ➕ Champs transmis pour la suite
                 msg.deviceId = sanitizedDeviceId;
                 msg.privateKey = privateKeyPem;
                 msg.publicKey = publicKeyPem;
