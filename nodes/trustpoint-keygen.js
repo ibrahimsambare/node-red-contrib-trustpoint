@@ -44,34 +44,33 @@ module.exports = function (RED) {
 
                 const rawDeviceId = msg.deviceId || config.deviceId || (msg.payload && msg.payload.deviceId) || "default";
                 const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
-                const filePath = `/home/pi/.node-red/keys/${sanitizedDeviceId}-key.pem`;
 
-                
-
-                // 🔧 Initialisation de msg.keystore si nécessaire
+                // 🔐 Préparation de msg.keystore
                 msg.keystore = msg.keystore || {};
                 msg.keystore.privateKey = privateKeyPem;
                 msg.keystore.publicKey = publicKeyPem;
-                
-                // 📥 Injecter deviceId, username, password
-                msg.keystore.deviceId = msg.deviceId || (msg.payload && msg.payload.deviceId);
+                msg.keystore.deviceId = rawDeviceId;
                 msg.keystore.estUsername = msg.estUsername || (msg.payload && msg.payload.estUsername);
                 msg.keystore.estPassword = msg.estPassword || (msg.payload && msg.payload.estPassword);
-                
+
                 // 📌 Sujet pour le CSR
                 msg.subject = {
                     commonName: sanitizedDeviceId,
                     countryName: 'NE',
                     organizationName: 'Trustpoint'
                 };
-                
-                // ✅ Ajout obligatoire pour trustpoint-prepare-keystore
+
+                // ✅ Nécessaire pour trustpoint-prepare-keystore
                 msg.privateKeyPem = privateKeyPem;
                 msg.publicKeyPem = publicKeyPem;
-                
+
+                // ✅ Nécessaire pour trustpoint-store-key
+                msg.payload = msg.payload || {};
+                msg.payload.privateKey = privateKeyPem;
+                msg.payload.deviceId = sanitizedDeviceId;
+
                 send(msg);
                 done();
-
             } catch (err) {
                 done(new Error(`Key generation failed: ${err.message}`));
             }
