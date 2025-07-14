@@ -1,29 +1,25 @@
-module.exports = function (RED) {
-    function TrustpointBuildEnrollPayloadNode(config) {
+module.exports = function(RED) {
+    function TrustpointBuildEnrollPayload(config) {
         RED.nodes.createNode(this, config);
-        const node = this;
+        var node = this;
 
-        node.on("input", function (msg) {
-            try {
-                if (!msg.estBaseUrl || !msg.estUsername || !msg.estPassword || !msg.payload || !msg.payload.csrDer) {
-                    node.error("Missing fields: estBaseUrl, estUsername, estPassword or csrDer", msg);
-                    return;
-                }
-
-                msg.payload = {
-                    estBaseUrl: msg.estBaseUrl,
-                    username: msg.estUsername,
-                    password: msg.estPassword,
-                    useBasic: true,
-                    csr: Buffer.from(msg.payload.csrDer)
-                };
-
-                node.send(msg);
-            } catch (err) {
-                node.error("❌ Failed to build enrollment payload: " + err.message, msg);
+        node.on('input', function(msg) {
+            if (!msg.payload || !msg.payload.csrDer || !msg.estUsername || !msg.estPassword || !msg.deviceId) {
+                node.error("Missing fields: estUsername, estPassword, deviceId or csrDer in msg", msg);
+                return;
             }
+
+            const payload = {
+                csr: msg.payload.csrDer.toString("base64"),
+                username: msg.estUsername,
+                password: msg.estPassword,
+                deviceId: msg.deviceId
+            };
+
+            msg.payload = payload;
+            node.send(msg);
         });
     }
 
-    RED.nodes.registerType("trustpoint-build-enroll-payload", TrustpointBuildEnrollPayloadNode);
-};
+    RED.nodes.registerType("trustpoint-build-enroll-payload", TrustpointBuildEnrollPayload);
+}
