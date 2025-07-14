@@ -7,19 +7,24 @@ module.exports = function (RED) {
 
         node.on('input', function (msg) {
             try {
-                if (!msg.deviceId || !msg.payload || !msg.payload.privateKey) {
+                if (!msg.deviceId || !msg.privateKey) {
                     node.error("Missing deviceId or privateKey in msg", msg);
                     return;
                 }
 
-                const device = msg.deviceId.replace(/[^a-zA-Z0-9_-]/g, '');
-                msg.filePath = `/home/pi/.node-red/keys/${device}-key.pem`;
-                msg.privateKeyObject = msg.payload.privateKey;
-                msg.payload = msg.payload.privateKey.toString();
+                const sanitizedId = msg.deviceId.replace(/[^a-zA-Z0-9_-]/g, '');
+                const keyPath = `/home/pi/.node-red/keys/${sanitizedId}-key.pem`;
+
+                // Ajoute les infos nécessaires dans msg.keystore
+                msg.filePath = keyPath;
+                msg.keystore = {
+                    deviceId: sanitizedId,
+                    privateKey: msg.privateKey
+                };
 
                 node.send(msg);
             } catch (err) {
-                node.error(`❌ Failed to prepare key store: ${err.message}`, msg);
+                node.error(`❌ Failed to prepare keystore: ${err.message}`, msg);
             }
         });
     }
