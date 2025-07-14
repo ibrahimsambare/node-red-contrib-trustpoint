@@ -4,23 +4,32 @@ module.exports = function (RED) {
         const node = this;
 
         node.on('input', function (msg) {
-            if (!msg.payload || !msg.payload.csrDer || !msg.estUsername || !msg.estPassword || !msg.deviceId) {
-                node.error("Missing fields: estUsername, estPassword, deviceId or csrDer in msg", msg);
-                return;
+            try {
+                // Vérifications
+                if (!msg.payload || !msg.payload.csrDer) {
+                    node.error("Missing CSR DER in msg.payload.csrDer", msg);
+                    return;
+                }
+
+                if (!msg.keystore || !msg.keystore.estUsername || !msg.keystore.estPassword) {
+                    node.error("Missing EST credentials (estUsername or estPassword) in msg.keystore", msg);
+                    return;
+                }
+
+                // Construction de la requête HTTP
+                msg.headers = {
+                    "Content-Type": "application/pkcs10",
+                    "Authorization": "Basic " + Buffer.from(
+                        `${msg.keystore.estUsername}:${msg.keystore.estPassword}`
+                    ).toString("base64")
+                };
+
+                msg.payload = msg.payload.csrDer; // le corps de la requête est le DER binaire
+
+                node.send(msg);
+            } catch (err) {
+                node.error("Failed to build EST enrollment payload: " + err.message, msg);
             }
-
-            const csrDer = Buffer.isBuffer(msg.payload.csrDer)
-                ? msg.payload.csrDer
-                : Buffer.from(msg.payload.csrDer, 'binary');
-
-            msg.payload = {
-                csr: csrDer.toString("base64"),
-                username: msg.estUsername,
-                password: msg.estPassword,
-                deviceId: msg.deviceId
-            };
-
-            node.send(msg);
         });
     }
 
