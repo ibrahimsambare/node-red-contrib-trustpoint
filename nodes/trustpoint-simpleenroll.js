@@ -50,7 +50,17 @@ module.exports = function (RED) {
                 } catch (parseError) {
                     node.warn('Failed to parse DER cert → passing raw body as Base64');
                     msg.payload = msg.payload || {};
-                    msg.payload.certificate = body.toString('base64');
+                    try {
+    const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
+    const certAsn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
+    const cert = forge.pki.certificateFromAsn1(certAsn1);
+    const certPemFallback = forge.pki.certificateToPem(cert);
+    msg.payload.certificate = certPemFallback;
+} catch (fallbackError) {
+    node.warn("Fallback also failed, storing base64 instead.");
+    msg.payload.certificate = body.toString('base64');
+}
+
                     msg.payload.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
                     send(msg);
                     done();
