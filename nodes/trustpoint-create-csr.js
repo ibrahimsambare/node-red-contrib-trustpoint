@@ -1,31 +1,36 @@
 const forge = require('node-forge');
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     function TrustpointCreateCsr(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        node.on('input', function(msg) {
+        node.on('input', function (msg) {
             try {
-                const { deviceId, privateKey, publicKey } = msg.keystore;
-
-                if (!deviceId || !privateKey || !publicKey) {
-                    node.error("Missing deviceId, privateKey or publicKey in msg.keystore", msg);
+                if (!msg.keystore || !msg.keystore.deviceId || !msg.keystore.privateKey || !msg.keystore.publicKey) {
+                    node.error("Missing keystore information (deviceId, privateKey, or publicKey)", msg);
                     return;
                 }
 
-                const privateKeyObj = forge.pki.privateKeyFromPem(privateKey);
-                const publicKeyObj = forge.pki.publicKeyFromPem(publicKey);
+                const deviceId = msg.keystore.deviceId;
+                const privateKeyPem = msg.keystore.privateKey;
+                const publicKeyPem = msg.keystore.publicKey;
+
+                const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+                const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
 
                 const csr = forge.pki.createCertificationRequest();
-                csr.publicKey = publicKeyObj;
-                csr.setSubject([
-                    { name: 'commonName', value: deviceId }
-                ]);
-                csr.sign(privateKeyObj);
+                csr.publicKey = publicKey;
+                csr.setSubject([{ name: 'commonName', value: deviceId }]);
+                csr.sign(privateKey);
 
-                // ✅ Le node d'enrollment attend directement un PEM string
-                msg.payload = forge.pki.certificationRequestToPem(csr);
+                const csrPem = forge.pki.certificationRequestToPem(csr);
+                const csrDer = forge.asn1.toDer(forge.pki.certificationRequestToAsn1(csr)).getBytes();
+
+                msg.payload = {
+                    csrPem: csrPem,
+                    csrDer: Buffer.from(csrDer, 'binary')
+                };
 
                 node.send(msg);
             } catch (err) {
