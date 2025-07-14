@@ -46,25 +46,32 @@ module.exports = function (RED) {
                 const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
                 const filePath = `/home/pi/.node-red/keys/${sanitizedDeviceId}-key.pem`;
 
+                
+
                 // 🔧 Initialisation de msg.keystore si nécessaire
                 msg.keystore = msg.keystore || {};
                 msg.keystore.privateKey = privateKeyPem;
                 msg.keystore.publicKey = publicKeyPem;
-
+                
                 // 📥 Injecter deviceId, username, password
                 msg.keystore.deviceId = msg.deviceId || (msg.payload && msg.payload.deviceId);
                 msg.keystore.estUsername = msg.estUsername || (msg.payload && msg.payload.estUsername);
                 msg.keystore.estPassword = msg.estPassword || (msg.payload && msg.payload.estPassword);
-
+                
                 // 📌 Sujet pour le CSR
                 msg.subject = {
                     commonName: sanitizedDeviceId,
                     countryName: 'NE',
                     organizationName: 'Trustpoint'
                 };
-
+                
+                // ✅ Ajout obligatoire pour trustpoint-prepare-keystore
+                msg.privateKeyPem = privateKeyPem;
+                msg.publicKeyPem = publicKeyPem;
+                
                 send(msg);
                 done();
+
             } catch (err) {
                 done(new Error(`Key generation failed: ${err.message}`));
             }
