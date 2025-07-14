@@ -12,7 +12,11 @@ module.exports = function (RED) {
             const format = config.format || msg.format || 'pem';
             const key = config.key || msg.key || 'default-key';
 
-            // Utiliser msg.filePath en priorité
+            // 🟢 Conserve le keystore et deviceId dans le msg
+            const keystore = msg.keystore;
+            const deviceId = msg.deviceId;
+
+            // 🟢 Corrigé : utilise msg.filePath (sinon config.filePath)
             const filePath = msg.filePath || config.filePath;
             const content = msg.payload;
 
@@ -30,16 +34,14 @@ module.exports = function (RED) {
 
                         fs.writeFileSync(filePath, content, Buffer.isBuffer(content) ? undefined : 'utf-8');
 
-                        node.log(`Stored content to ${filePath}`);
-
-                        // ✅ NE PAS ÉCRASER msg.payload
-                        msg.storeStatus = { status: 'stored', path: filePath };
+                        node.log(`✅ Stored content to ${filePath}`);
+                        msg.payload = { status: 'stored', path: filePath };
                     } else if (operation === 'retrieve') {
                         if (!fs.existsSync(filePath)) return node.error(`File not found: ${filePath}`);
 
                         const fileContent = fs.readFileSync(filePath, 'utf-8');
                         msg.payload = fileContent;
-                        node.log(`Retrieved content from ${filePath}`);
+                        node.log(`📤 Retrieved content from ${filePath}`);
                     } else {
                         return node.error("Unsupported operation");
                     }
@@ -47,29 +49,3 @@ module.exports = function (RED) {
                 } else if (location === 'context') {
                     const target = config.contextScope || 'flow';
                     const context = (target === 'flow') ? node.context().flow : node.context().global;
-
-                    if (operation === 'store') {
-                        context.set(key, content);
-                        msg.storeStatus = { status: 'stored', scope: target, key };
-                    } else if (operation === 'retrieve') {
-                        const stored = context.get(key);
-                        if (!stored) return node.error(`Key not found in ${target} context`);
-                        msg.payload = stored;
-                    } else {
-                        return node.error("Unsupported operation");
-                    }
-
-                } else {
-                    return node.error("Invalid storage location");
-                }
-
-                node.send(msg);
-
-            } catch (err) {
-                node.error(`trustpoint-store error: ${err.message}`, msg);
-            }
-        });
-    }
-
-    RED.nodes.registerType("trustpoint-store", TrustpointStoreNode);
-};
