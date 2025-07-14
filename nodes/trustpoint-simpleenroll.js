@@ -18,16 +18,19 @@ module.exports = function (RED) {
             const password = msg.estPassword || msg.keystore?.estPassword || config.password;
 
             const options = {
-                method: 'POST',
-                url: estUrl,
-                headers: {
-                    'Content-Type': 'application/pkcs10',
-                    'Content-Length': csrBuffer.length
-                },
-                body: csrBuffer,
-                encoding: null, // Important pour recevoir Buffer
-                auth: username && password ? { user: username, pass: password } : undefined
-            };
+             method: 'POST',
+             url: estUrl,
+             headers: {
+                'Content-Type': 'application/pkcs10',
+                'Content-Length': csrBuffer.length
+            },
+            body: csrBuffer,
+            encoding: null,
+            auth: username && password ? { user: username, pass: password } : undefined,
+
+            rejectUnauthorized: false
+};
+
 
             request(options, (error, response, body) => {
                 if (error) return done(error);
