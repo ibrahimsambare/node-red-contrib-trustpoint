@@ -5,14 +5,20 @@ module.exports = function(RED) {
     function TrustpointStoreKey(config) {
         RED.nodes.createNode(this, config);
         const node = this;
+        node.filePath = config.filePath; // <== récupération depuis config
 
         node.on('input', function(msg) {
             try {
                 const privateKey = msg.payload?.privateKey;
-                const filePath = msg.filePath;
+                const filePath = RED.util.evaluateNodeProperty(
+                    node.filePath,
+                    config.filePath_fieldType || 'str',
+                    node,
+                    msg
+                );
 
                 if (!privateKey || !filePath) {
-                    node.error("Missing privateKey in msg.payload or filePath in msg", msg);
+                    node.error("Missing privateKey or filePath.", msg);
                     return;
                 }
 
