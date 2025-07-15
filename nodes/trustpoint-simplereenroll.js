@@ -1,91 +1,97 @@
-const https = require('https');
 const forge = require('node-forge');
+const request = require('request');
 
 module.exports = function (RED) {
-    function TrustpointSimpleReenrollNode(config) {
+    function TrustpointSimpleEnrollNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        node.on('input', function (msg) {
-            const estBaseUrl = msg.payload?.estBaseUrl;
-            const clientCertPem = msg.payload?.clientCert || config.clientCert;
-            const clientKeyPem = msg.payload?.clientKey || config.clientKey;
+        // Récupérer l'option "rejectUnauthorized" depuis l'interface (ou true par défaut)
+        node.rejectUnauthorized = config.rejectUnauthorized !== false;
 
-            if (!estBaseUrl || !clientCertPem || !clientKeyPem) {
-                return node.error("Missing estBaseUrl, clientCert, or clientKey in msg.payload");
+        node.on('input', function (msg, send, done) {
+            const estUrl = config.estHost || msg.estUrl;
+            const csrBuffer = msg.payload;
+
+            if (!estUrl || !Buffer.isBuffer(csrBuffer)) {
+                return done(new Error("Missing EST URL or CSR buffer"));
             }
 
-            try {
-                const urlObj = new URL(estBaseUrl);
+            const username = msg.estUsername || msg.keystore?.estUsername || config.username;
+            const password = msg.estPassword || msg.keystore?.estPassword || config.password;
 
-                const cert = forge.pki.certificateFromPem(clientCertPem);
-                const key = forge.pki.privateKeyFromPem(clientKeyPem);
+            const options = {
+                method: 'POST',
+                url: estUrl,
+                headers: {
+                    'Content-Type': 'application/pkcs10',
+                    'Content-Length': csrBuffer.length
+                },
+                body: csrBuffer,
+                encoding: null,
+                auth: username && password ? { user: username, pass: password } : undefined,
+                rejectUnauthorized: node.rejectUnauthorized
+            };
 
-                const csr = forge.pki.createCertificationRequest();
-                csr.publicKey = cert.publicKey;
-                csr.setSubject(cert.subject.attributes);
-                csr.sign(key);
+            request(options, (error, response, body) => {
+                if (error) return done(error);
 
-                const csrDer = Buffer.from(
-                    forge.asn1.toDer(forge.pki.certificationRequestToAsn1(csr)).getBytes(),
-                    'binary'
-                );
+                try {
+                    const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
+                    const certAsn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
+                    const cert = forge.pki.certificateFromAsn1(certAsn1);
+                    const certPem = forge.pki.certificateToPem(cert);
 
-                const options = {
-                    hostname: urlObj.hostname,
-                    port: urlObj.port || 443,
-                    path: urlObj.pathname,
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/pkcs10',
-                        'Content-Length': csrDer.length
-                    },
-                    key: clientKeyPem,
-                    cert: clientCertPem,
-                    rejectUnauthorized: false // For dev; set to true in prod
-                };
+                    // ✅ Stocker dans un champ séparé
+                    msg.certificate = certPem;
+                    msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
 
-                node.status({ fill: "blue", shape: "dot", text: "Sending ReEnroll request..." });
+                    // ✅ Construction propre du payload final
+                    msg.payload = {
+                        certificate: msg.certificate,
+                        deviceId: msg.deviceId
+                    };
 
-                const req = https.request(options, res => {
-                    let chunks = [];
+                    send(msg);
+                    done();
+                } catch (parseError) {
+                    node.warn('Failed to parse DER cert → fallback parse attempt...');
 
-                    res.on('data', chunk => chunks.push(chunk));
-                    res.on('end', () => {
-                        const buffer = Buffer.concat(chunks);
+                    try {
+                        const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
+                        const certAsn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
+                        const cert = forge.pki.certificateFromAsn1(certAsn1);
+                        const certPemFallback = forge.pki.certificateToPem(cert);
 
-                        node.status({ fill: "green", shape: "dot", text: `Status: ${res.statusCode}` });
+                        msg.certificate = certPemFallback;
+                        msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
 
-                        if (res.statusCode === 200) {
-                            try {
-                                const p7asn1 = forge.asn1.fromDer(buffer.toString('binary'));
-                                const p7 = forge.pkcs7.messageFromAsn1(p7asn1);
-                                const pemCerts = p7.certificates.map(cert => forge.pki.certificateToPem(cert));
+                        msg.payload = {
+                            certificate: msg.certificate,
+                            deviceId: msg.deviceId
+                        };
 
-                                msg.payload = pemCerts;
-                                node.send(msg);
-                            } catch (e) {
-                                node.error("Failed to parse renewed certificate (PKCS#7 expected): " + e.message, msg);
-                            }
-                        } else {
-                            node.error(`Re-enrollment failed (HTTP ${res.statusCode})`, msg);
-                        }
-                    });
-                });
+                        send(msg);
+                        done();
+                    } catch (fallbackError) {
+                        node.warn("Fallback failed — returning base64 certificate.");
+                        const base64Cert = Buffer.isBuffer(body) ? body.toString('base64') : Buffer.from(body, 'binary').toString('base64');
 
-                req.on('error', err => {
-                    node.status({ fill: "red", shape: "ring", text: "Error" });
-                    node.error("HTTPS error: " + err.message, msg);
-                });
+                        msg.certificate = base64Cert;
+                        msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
 
-                req.write(csrDer);
-                req.end();
+                        msg.payload = {
+                            certificate: msg.certificate,
+                            deviceId: msg.deviceId
+                        };
 
-            } catch (e) {
-                node.error("Reenrollment error: " + e.message, msg);
-            }
+                        send(msg);
+                        done();
+                    }
+                }
+            });
         });
     }
 
-    RED.nodes.registerType("trustpoint-simplereenroll", TrustpointSimpleReenrollNode);
+    RED.nodes.registerType("trustpoint-simpleenroll", TrustpointSimpleEnrollNode);
 };
