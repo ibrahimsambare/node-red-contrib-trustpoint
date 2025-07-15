@@ -17,12 +17,12 @@ module.exports = function (RED) {
                     return;
                 }
 
-                // 📁 Déterminer automatiquement le chemin de stockage
+                // Automatically determine file storage path
                 const filePath = path.join("/home/pi/.node-red/certs", `${deviceId}-cert.pem`);
                 fs.writeFileSync(filePath, certPem, 'utf8');
                 node.log(`Certificate stored at: ${filePath}`);
 
-                // 🔍 Extraction des métadonnées avec node-forge
+                // Extract metadata using node-forge
                 const cert = forge.pki.certificateFromPem(certPem);
 
                 msg.certMeta = {
