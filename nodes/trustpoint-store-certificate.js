@@ -17,12 +17,10 @@ module.exports = function (RED) {
                     return;
                 }
 
-                // 📁 Optionnel : stockage local
-                if (config.filePath) {
-                    const filePath = path.resolve(config.filePath.replace(/\${deviceId}/g, deviceId));
-                    fs.writeFileSync(filePath, certPem, 'utf8');
-                    node.log(`Certificate stored at: ${filePath}`);
-                }
+                // 📁 Déterminer automatiquement le chemin de stockage
+                const filePath = path.join("/home/pi/.node-red/certs-mqtt", `${deviceId}-cert.pem`);
+                fs.writeFileSync(filePath, certPem, 'utf8');
+                node.log(`Certificate stored at: ${filePath}`);
 
                 // 🔍 Extraction des métadonnées avec node-forge
                 const cert = forge.pki.certificateFromPem(certPem);
@@ -33,13 +31,20 @@ module.exports = function (RED) {
                     validFrom: cert.validity.notBefore.toISOString(),
                     validTo: cert.validity.notAfter.toISOString(),
                     keyType: cert.publicKey.n ? 'RSA' : 'EC',
-                    keySize: cert.publicKey.n ? cert.publicKey.n.bitLength() : cert.publicKey.curve?.name || ''
+                    keySize: cert.publicKey.n ? cert.publicKey.n.bitLength() : cert.publicKey.curve?.name || '',
+                    deviceId: deviceId
+                };
+
+                msg.payload = {
+                    status: "stored",
+                    path: filePath
                 };
 
                 send(msg);
                 done();
             } catch (err) {
                 node.error("Failed to process certificate: " + err.message, msg);
+                done(err);
             }
         });
     }
