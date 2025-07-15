@@ -78,6 +78,20 @@ If you're using Dashboard features (e.g., forms, buttons, charts), you will also
 - Node.js >= 18.x (tested with latest LTS)
 - EST server compatible with RFC 7030 (Enrollment over Secure Transport)
 
+All required dependencies will be installed automatically, including:
+
+node-forge
+request
+
+⚠️ If using Node-RED via Docker, make sure to run the install command inside the container:
+
+```bash
+docker exec -it <your-container-name>
+cd /data
+npm install node-red-contrib-trustpoint
+```
+
+
 ### Install via Node-RED Palette Manager
 
 You can install this nodeset directly from the Node-RED editor:
