@@ -9,7 +9,7 @@ module.exports = function (RED) {
                 const { privateKeyPem, publicKeyPem } = msg;
 
                 if (!deviceId || !estUsername || !estPassword) {
-                    node.error("Missing deviceId, estUsername or estPassword in msg.payload", msg);
+                    node.error("Missing deviceId, estUsername, or estPassword in msg.payload", msg);
                     return;
                 }
 
@@ -18,7 +18,7 @@ module.exports = function (RED) {
                     return;
                 }
 
-                // Préparation de la structure keystore
+                // Prepare keystore structure
                 msg.keystore = {
                     deviceId,
                     estUsername,
