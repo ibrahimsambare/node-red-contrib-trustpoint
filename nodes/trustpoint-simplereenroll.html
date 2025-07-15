@@ -6,32 +6,52 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-estUrl"><i class="fa fa-link"></i> EST URL</label>
-        <input type="text" id="node-input-estUrl" placeholder="https://your-server/.well-known/est/reenroll" style="width: 100%;">
-        <input type="hidden" id="node-input-estUrl_fieldType">
+        <label for="node-input-estHost"><i class="fa fa-link"></i> EST Base URL</label>
+        <input type="text" id="node-input-estHost" placeholder="https://localhost:8443/.well-known/est/simplereenroll">
     </div>
 
     <div class="form-row">
-        <label for="node-input-clientCert"><i class="fa fa-certificate"></i> Client Certificate (PEM)</label>
-        <input type="text" id="node-input-clientCert" placeholder="msg.payload.clientCert or inline PEM" style="width: 100%;">
+        <label for="node-input-useBasic"><i class="fa fa-lock"></i> Use Basic Auth</label>
+        <input type="checkbox" id="node-input-useBasic" style="width:auto;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
+        <input type="text" id="node-input-username" placeholder="Optional username for Basic Auth">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-password"><i class="fa fa-key"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="Optional password for Basic Auth">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-useMtls"><i class="fa fa-certificate"></i> Use mTLS</label>
+        <input type="checkbox" id="node-input-useMtls" style="width:auto;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-clientCert"><i class="fa fa-file"></i> Client Cert</label>
+        <input type="text" id="node-input-clientCert" placeholder="msg.payload.clientCert or path">
         <input type="hidden" id="node-input-clientCert_fieldType">
     </div>
 
     <div class="form-row">
-        <label for="node-input-clientKey"><i class="fa fa-key"></i> Private Key (PEM)</label>
-        <input type="text" id="node-input-clientKey" placeholder="msg.payload.clientKey or inline PEM" style="width: 100%;">
+        <label for="node-input-clientKey"><i class="fa fa-key"></i> Client Key</label>
+        <input type="text" id="node-input-clientKey" placeholder="msg.payload.clientKey or path">
         <input type="hidden" id="node-input-clientKey_fieldType">
     </div>
 
     <div class="form-row">
-        <label for="node-input-rejectUnauthorized"><i class="fa fa-shield"></i> Verify Server Certificate</label>
-        <input type="checkbox" id="node-input-rejectUnauthorized" style="vertical-align: middle;">
-        <span> Reject untrusted TLS certs</span>
+        <label for="node-input-rejectUnauthorized">
+            <input type="checkbox" id="node-input-rejectUnauthorized" style="width:auto;" checked>
+            Reject self-signed certificates (recommended)
+        </label>
     </div>
 
     <div id="reenroll-preview" class="validation-result">
-        <div class="validation-box validation-info" id="reenroll-preview-box">
-            This node requires a CSR buffer in <code>msg.payload.csr</code> and an EST URL. If the URL is not defined in the node, it can be passed via <code>msg.payload.estBaseUrl</code>.
+        <div class="validation-box" id="reenroll-preview-box">
+            This node sends a CSR to the EST server using Simplereenroll. Provide `msg.payload` with a valid CSR (Buffer or PEM string).
         </div>
     </div>
 
@@ -55,20 +75,23 @@
     (function () {
         RED.nodes.registerType('trustpoint-simplereenroll', {
             category: 'Trustpoint',
-            color: '#ccccff',
+            color: '#ffe0cc',
             defaults: {
                 name: { value: "" },
-                estUrl: { value: "", required: false },
-                estUrl_fieldType: { value: "str" },
-                clientCert: { value: "", required: false },
+                estHost: { value: "" },
+                useBasic: { value: false },
+                username: { value: "" },
+                password: { value: "" },
+                useMtls: { value: false },
+                clientCert: { value: "" },
                 clientCert_fieldType: { value: "str" },
-                clientKey: { value: "", required: false },
+                clientKey: { value: "" },
                 clientKey_fieldType: { value: "str" },
                 rejectUnauthorized: { value: true }
             },
             inputs: 1,
             outputs: 1,
-            icon: "font-awesome/fa-refresh",
+            icon: "font-awesome/fa-exchange",
             label: function () {
                 return this.name || "trustpoint-simplereenroll";
             },
@@ -88,11 +111,23 @@
                     typeField: $("#node-input-clientKey_fieldType")
                 });
 
-                $("#node-input-estUrl").typedInput({
-                    default: 'str',
-                    types: ['str', 'msg', 'flow', 'global'],
-                    typeField: $("#node-input-estUrl_fieldType")
-                });
+                function toggleAuthFields() {
+                    const useBasic = $("#node-input-useBasic").is(":checked");
+                    $("#node-input-username").prop("disabled", !useBasic);
+                    $("#node-input-password").prop("disabled", !useBasic);
+                }
+
+                function toggleMtlsFields() {
+                    const useMtls = $("#node-input-useMtls").is(":checked");
+                    $("#node-input-clientCert").prop("disabled", !useMtls);
+                    $("#node-input-clientKey").prop("disabled", !useMtls);
+                }
+
+                $("#node-input-useBasic").on("change", toggleAuthFields);
+                $("#node-input-useMtls").on("change", toggleMtlsFields);
+
+                toggleAuthFields();
+                toggleMtlsFields();
 
                 $("#reenroll-preview-box").addClass("validation-info");
             }
