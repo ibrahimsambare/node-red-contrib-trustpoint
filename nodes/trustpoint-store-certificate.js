@@ -18,7 +18,7 @@ module.exports = function (RED) {
                 }
 
                 // 📁 Déterminer automatiquement le chemin de stockage
-                const filePath = path.join("/home/pi/.node-red/certs-mqtt", `${deviceId}-cert.pem`);
+                const filePath = path.join("/home/pi/.node-red/certs", `${deviceId}-cert.pem`);
                 fs.writeFileSync(filePath, certPem, 'utf8');
                 node.log(`Certificate stored at: ${filePath}`);
 
