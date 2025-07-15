@@ -5,14 +5,14 @@ module.exports = function (RED) {
 
         node.on('input', function (msg) {
             try {
-                // ✅ Vérifier que le CSR en DER est présent
+                // Check that CSR in DER format is present
                 const csrDer = msg.payload?.csrDer;
                 if (!csrDer || !Buffer.isBuffer(csrDer)) {
                     node.error("Missing or invalid CSR DER in msg.payload.csrDer", msg);
                     return;
                 }
 
-                // ✅ Vérifier que les identifiants EST sont présents
+                // Check that EST credentials are provided
                 const estUsername = msg.keystore?.estUsername;
                 const estPassword = msg.keystore?.estPassword;
 
@@ -21,13 +21,13 @@ module.exports = function (RED) {
                     return;
                 }
 
-                // ✅ Préparation des headers pour la requête HTTP
+                // Prepare HTTP headers for the EST request
                 msg.headers = {
                     "Content-Type": "application/pkcs10",
                     "Authorization": "Basic " + Buffer.from(`${estUsername}:${estPassword}`).toString("base64")
                 };
 
-                // ✅ On transmet uniquement le CSR DER brut dans msg.payload
+                // Replace payload with raw CSR DER
                 msg.payload = csrDer;
 
                 node.send(msg);
