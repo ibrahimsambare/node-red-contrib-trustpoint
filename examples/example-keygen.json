@@ -1,0 +1,48 @@
+[
+  {
+    "id": "keygen-node-1",
+    "type": "trustpoint-keygen",
+    "z": "flow-id-placeholder",
+    "name": "Generate RSA Key",
+    "keyType": "RSA",
+    "keySize": "2048",
+    "curve": "",
+    "x": 300,
+    "y": 120,
+    "wires": [
+      ["debug-output"]
+    ]
+  },
+  {
+    "id": "inject-trigger",
+    "type": "inject",
+    "z": "flow-id-placeholder",
+    "name": "Trigger",
+    "props": [],
+    "repeat": "",
+    "crontab": "",
+    "once": true,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 100,
+    "y": 120,
+    "wires": [
+      ["keygen-node-1"]
+    ]
+  },
+  {
+    "id": "debug-output",
+    "type": "debug",
+    "z": "flow-id-placeholder",
+    "name": "Show Key Output",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 520,
+    "y": 120,
+    "wires": []
+  }
+]
