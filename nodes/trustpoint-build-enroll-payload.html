@@ -20,12 +20,12 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <p>
-        Construit l'objet <code>msg.payload</code> à envoyer pour l'enrôlement EST, en injectant le CSR DER et les identifiants.
+        Builds the <code>msg.payload</code> object to be sent for EST enrollment, injecting the CSR in DER format and credentials.
     </p>
 </script>
 
 <script type="text/x-red" data-help-name="trustpoint-build-enroll-payload">
     <p>
-        Ce nœud prend <code>msg.estBaseUrl</code>, <code>msg.estUsername</code>, <code>msg.estPassword</code> et un CSR au format DER, puis prépare l’objet <code>msg.payload</code> attendu par le nœud <code>trustpoint-simpleenroll</code>.
+        This node takes <code>msg.estBaseUrl</code>, <code>msg.estUsername</code>, <code>msg.estPassword</code>, and a CSR in DER format, then prepares the <code>msg.payload</code> object expected by the <code>trustpoint-simpleenroll</code> node.
     </p>
 </script>
