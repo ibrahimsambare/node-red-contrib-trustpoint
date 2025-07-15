@@ -1,0 +1,970 @@
+[
+    {
+        "id": "fc669d4eef925a6b",
+        "type": "tab",
+        "label": "Full process",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5dd17922f697f3b5",
+        "type": "mqtt out",
+        "z": "fc669d4eef925a6b",
+        "name": "MQTT OUT test/topic",
+        "topic": "test/topic",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "d57d28d770a3cbf5",
+        "x": 780,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "9cc430d9e3f15074",
+        "type": "mqtt in",
+        "z": "fc669d4eef925a6b",
+        "name": "MQTT IN test/topic",
+        "topic": "test/topic",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "d57d28d770a3cbf5",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 570,
+        "y": 420,
+        "wires": [
+            [
+                "b6ad932878b647d8",
+                "1bd294a0a7a06aeb",
+                "00b051fd265dfa3b"
+            ]
+        ]
+    },
+    {
+        "id": "b6ad932878b647d8",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "1bd294a0a7a06aeb",
+        "type": "ui_chart",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "group": "mqtt-group",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Messages Chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 820,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "00b051fd265dfa3b",
+        "type": "ui_text",
+        "z": "fc669d4eef925a6b",
+        "group": "mqtt-group",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last message",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 800,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "622993aa03c05a2b",
+        "type": "ui_text_input",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "label": "Message to send",
+        "tooltip": "",
+        "group": "mqtt-group",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "passthru": true,
+        "mode": "text",
+        "delay": "0",
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 550,
+        "y": 260,
+        "wires": [
+            [
+                "5dd17922f697f3b5"
+            ]
+        ]
+    },
+    {
+        "id": "9d705b8a53321163",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "60ef3d655ef605b5",
+        "name": "Welcome Animation",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<!-- Global Container -->\n<div class=\"center-container\">\n    <div class=\"content-box\">\n        <!-- Logos -->\n        <div class=\"logos\">\n            <img src=\"/node-red_logo.png\" alt=\"Node-RED\" style=\"height: 130px;\">\n            <img src=\"/trustpoint_logo.png\" alt=\"Trustpoint\" style=\"height: 170px;\">\n        </div>\n\n        <!-- Title -->\n        <h1>Welcome to the Trustpoint Secure Provisioning Dashboard</h1>\n\n        <!-- Description -->\n        <p>\n            This interface allows you to enroll new devices<br>\n            and monitor secure MQTT communication using mutual TLS (mTLS).\n        </p>\n\n        <!-- Buttons -->\n        <div>\n            <a href=\"#!/Enrollment\"><button class=\"btn\">Go to Enrollment</button></a>\n            <a href=\"#!/MQTT%20Secure%20Monitoring\"><button class=\"btn\">Go to Monitoring</button></a>\n            <a href=\"#!/About%20the%20project\"><button class=\"btn\">About the Project</button></a>\n        </div>\n    </div>\n</div>\n\n<!-- CSS -->\n<style>\n    @keyframes fadeIn {\n        from {\n            opacity: 0;\n            transform: translateY(-20px);\n        }\n\n        to {\n            opacity: 1;\n            transform: translateY(0);\n        }\n    }\n\n    .center-container {\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        height: 100vh;\n        background-color: #ffffff;\n        /* fond clair */\n        animation: fadeIn 1s ease-in-out;\n    }\n\n    .content-box {\n        text-align: center;\n        max-width: 900px;\n        padding: 40px;\n    }\n\n    .logos {\n        margin-bottom: 40px;\n    }\n\n    .logos img {\n        height: 130px;\n        margin: 0 20px;\n    }\n\n    .content-box h1 {\n        font-size: 45px;\n        margin-bottom: 30px;\n        color: #000000;\n    }\n\n    .content-box p {\n        font-size: 24px;\n        color: #444444;\n        margin-bottom: 40px;\n        line-height: 1.6;\n    }\n\n    .btn {\n        color: white;\n        background-color: #007bff;\n        padding: 15px 35px;\n        font-size: 17px;\n        margin: 10px;\n        border-radius: 6px;\n        border: none;\n        cursor: pointer;\n    }\n\n    .btn:hover {\n        background-color: #0056b3;\n    }\n\n    /* Fond du menu latéral */\n    md-sidenav.md-sidenav-left {\n    background-color: #ffffff !important;\n    color: #000000 !important;\n    }\n    \n    /* Couleur des liens et icônes */\n    md-list-item .nr-dashboard-menuitem span {\n    color: #007bff !important; /* ou noir : #000000 */\n    font-weight: bold;\n    }\n    \n    /* Couleur des icônes dashboard */\n    .nr-dashboard-icon {\n    color: #007bff !important;\n    }\n</style>\n\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 120,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f65344ddac15290b",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "76f842c693439b31",
+        "name": "About",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"text-align: center; padding: 30px;\">\n    <h2 style=\"color: white;\">Project Overview</h2><br>\n    <p style=\"color: #ccc; font-size: 18px; max-width: 700px; margin: auto; line-height: 1.6;\">\n        This application demonstrates a full secure device provisioning workflow using EST protocols and MQTT with\n        mutual TLS (mTLS). Below is QR code linking to explanations of each phase.\n    </p>\n\n    <!-- QR Codes Section -->\n    <div style=\"display:\n￼\ncommon\ninject\ndebug\ncomplete\ncatch\nstatus\nlink in\nlink call\nlink out\ncomment\nfunction\nfunction\nswitch\nchange\nrange\ntemplate\ndelay\ntrigger\nexec\nfilter\nfunction -\nnpm\nrandom\nsmooth\nnetwork\nmqtt in\nmqtt out\nhttp in\nhttp response\nhttp request\nwebsocket in\nwebsocket\nout\ntcp in\ntcp out\ntcp request\nudp in\nudp out\nserial in\nserial out\nserial request\nserial control\nping\noutput\nplay audio\nsequence\nsplit\njoin\nsort\nbatch\nparser\ncsv\nhtml\njson\nxml\nyaml\nbuffer - parser\nbuffer - maker\nstorage\nwrite file\nread file\nwatch\nTrustpoint\ntrustpoint -\nkeygen\ntrustpoint -\ncreate - csr\ntrustpoint -\nsimpleenroll\ntrustpoint -\nsimplereenroll\ntrustpoint -\ncacerts\ntrustpoint -\nstore\ndashboard\nbutton\ndropdown\nswitch\nslider\nnumeric\ntext input\ndate picker\ncolour picker\nform\ntext\ngauge\nchart\naudio out\nnotification\nui control\ntemplate\ntable\nRaspberry Pi\nrpi - gpio in\nrpi - gpio out\nrpi - mouse\nrpi - keyboard\n￼￼\ndashboard\nLayout\nSite\nTheme\n flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px;\">\n        <div>\n            <h3 style=\"color: #00bfff;\">github README QR</h3><br>\n            <img src=\"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://github.com/ibrahimsambare/node-red-contrib-trustpoint/blob/main/README.md\n\" alt=\"README QR\" style=\"height: 160px;\">\n        </div>\n    </div>\n</div>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 70,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "882226ff316bf8d7",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "",
+        "name": "Template Scope ",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    /* Changer le fond du menu latéral */\n    md-sidenav.md-sidenav-left {\n        background-color: #ffffff !important;\n        /* blanc */\n        color: #000000 !important;\n        /* texte noir */\n    }\n\n    /* Couleur des textes dans le menu */\n    md-list-item .nr-dashboard-menuitem span {\n        color: #000000 !important;\n        font-weight: 500;\n    }\n\n    /* Icônes dans le menu */\n    .nr-dashboard-icon {\n        color: #007bff !important;\n        /* bleu clair élégant */\n    }\n\n    /* Texte du titre Node-RED Dashboard */\n    .nr-dashboard-theme .md-toolbar-tools {\n        color: #ffffff !important;\n        /* texte blanc */\n    }\n\n    /* Toolbar (haut) */\n    md-toolbar {\n        background-color: #007bff !important;\n        /* bleu clair */\n    }\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "global",
+        "className": "",
+        "x": 100,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6e5c554bc3349843",
+        "type": "trustpoint-cacerts",
+        "z": "fc669d4eef925a6b",
+        "name": "Get CA Certs",
+        "estUrl": "https://localhost/.well-known/est/arburg/cacerts/",
+        "estUrl_fieldType": "str",
+        "x": 790,
+        "y": 820,
+        "wires": [
+            [
+                "505fe46bb0bd25b2",
+                "784b3023c5815ab8"
+            ]
+        ]
+    },
+    {
+        "id": "3082ca62a2fe2243",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "Debug Store CA Certs",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "c668d94ef9256a6b",
+        "type": "ui_button",
+        "z": "fc669d4eef925a6b",
+        "name": "Fetch CA Button",
+        "group": "64e68462e75b7176",
+        "order": 1,
+        "width": "16",
+        "height": 1,
+        "passthru": false,
+        "label": "Fetch CA Certs",
+        "tooltip": "Download CA from Trustpoint",
+        "color": "",
+        "bgcolor": "#007bff",
+        "className": "<h3 style=\"text-align: center;\"></h3><br><br><br>",
+        "icon": "cloud-download",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "x": 510,
+        "y": 820,
+        "wires": [
+            [
+                "6e5c554bc3349843"
+            ]
+        ]
+    },
+    {
+        "id": "819f3318ef1aaca1",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "64e68462e75b7176",
+        "name": "CA certs",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "format": "\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 100,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4843cdf8f1cff114",
+        "type": "ui_text",
+        "z": "fc669d4eef925a6b",
+        "group": "64e68462e75b7176",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-right",
+        "className": "text-center",
+        "style": true,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1250,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "505fe46bb0bd25b2",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "64e68462e75b7176",
+        "name": "",
+        "order": 4,
+        "width": "16",
+        "height": "19",
+        "format": "<md-card>\n    <md-card-title>\n        <span class=\"md-headline\">CA Certificate (PEM)</span>\n    </md-card-title>\n\n    <md-card-content layout=\"column\">\n        <textarea\n      id=\"certDisplay\"\n      rows=\"20\"\n      readonly\n      style=\"width:100%; font-family: monospace; background-color: #f4f4f4; color: #222; padding: 12px; border-radius: 6px; border: 1px solid #ccc; resize: vertical;\">\n{{msg.payload}}\n    </textarea>\n        <br>\n        <md-button class=\"md-raised md-primary\" onclick=\"copyCert()\">📋 Copier le certificat</md-button>\n        <span id=\"copyStatus\" style=\"margin-left:10px; color:green;\"></span>\n    </md-card-content>\n</md-card>\n\n<script>\n    function copyCert() {\n    var textarea = document.getElementById(\"certDisplay\");\n    textarea.select();\n    document.execCommand(\"copy\");\n\n    // Message visuel de confirmation\n    var status = document.getElementById(\"copyStatus\");\n    status.textContent = \"✅ Copié !\";\n    setTimeout(() => status.textContent = \"\", 2000);\n  }\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1020,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c44411bc7c42ad6e",
+        "type": "ui_form",
+        "z": "fc669d4eef925a6b",
+        "name": "Start Provisioning Form Enrollment",
+        "label": "Provision a Device",
+        "group": "ui_group_enroll",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Device ID",
+                "value": "deviceId",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Username",
+                "value": "estUsername",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "estPassword",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "deviceId": "",
+            "estUsername": "",
+            "estPassword": ""
+        },
+        "payload": "",
+        "submit": "Start Provisioning",
+        "cancel": "Cancel",
+        "topic": "",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 260,
+        "y": 1120,
+        "wires": [
+            [
+                "c1ade04a02f81c3d"
+            ]
+        ]
+    },
+    {
+        "id": "c1ade04a02f81c3d",
+        "type": "trustpoint-keygen",
+        "z": "fc669d4eef925a6b",
+        "name": "Generate Keys",
+        "algorithm": "RSA",
+        "keySize": "2048",
+        "persist": false,
+        "filenamePrefix": "",
+        "filenamePrefix_fieldType": "str",
+        "x": 520,
+        "y": 1120,
+        "wires": [
+            [
+                "c55d9c69d5a7d4ba"
+            ]
+        ]
+    },
+    {
+        "id": "e3e65e6c988dc106",
+        "type": "trustpoint-create-csr",
+        "z": "fc669d4eef925a6b",
+        "name": "Create CSR",
+        "privateKey": "",
+        "privateKey_fieldType": "str",
+        "cn": "",
+        "o": "",
+        "ou": "",
+        "san": "",
+        "x": 1090,
+        "y": 1120,
+        "wires": [
+            [
+                "124bc60ba1d3d4da"
+            ]
+        ]
+    },
+    {
+        "id": "124bc60ba1d3d4da",
+        "type": "trustpoint-build-enroll-payload",
+        "z": "fc669d4eef925a6b",
+        "name": "Build Enroll Payload",
+        "x": 1300,
+        "y": 1120,
+        "wires": [
+            [
+                "56aa927683c7be6a",
+                "58404244b6bedeb0"
+            ]
+        ]
+    },
+    {
+        "id": "56aa927683c7be6a",
+        "type": "trustpoint-simpleenroll",
+        "z": "fc669d4eef925a6b",
+        "name": "Enroll Device",
+        "estHost": "https://127.0.0.1:443/.well-known/est/arburg/domaincredential/simpleenroll/",
+        "useBasic": false,
+        "username": "",
+        "password": "",
+        "useMtls": false,
+        "clientCert": "",
+        "clientCert_fieldType": "str",
+        "clientKey": "",
+        "clientKey_fieldType": "str",
+        "rejectUnauthorized": false,
+        "x": 1510,
+        "y": 1120,
+        "wires": [
+            [
+                "019f5049e2aef1a5"
+            ]
+        ]
+    },
+    {
+        "id": "b452e4949e941d58",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "ui_group_enroll",
+        "name": "Certificate Metadata Enrollment",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"padding:10px\">\n    <h4>🎓 Certificate Metadata</h4>\n    <p><b>Device ID:</b> {{msg.keystore.deviceId}}</p>\n    <p><b>Subject CN:</b> {{msg.certMeta.subjectCN}}</p>\n    <p><b>Issuer CN:</b> {{msg.certMeta.issuerCN}}</p>\n    <p><b>Valid From:</b> {{msg.certMeta.validFrom}}</p>\n    <p><b>Valid To:</b> {{msg.certMeta.validTo}}</p>\n    <p><b>Key Type:</b> {{msg.certMeta.keyType}}</p>\n    <p><b>Key Size/Curve:</b> {{msg.certMeta.keySize || msg.certMeta.curve}}</p>\n</div>\n<div style=\"margin-top:20px\">\n    <h4>📄 Full Certificate (PEM)</h4>\n    <pre\n        style=\"white-space: pre-wrap; word-break: break-word; background-color: #f7f7f7; padding: 10px; border: 1px solid #ccc;\">\n{{msg.certificate}}\n    </pre>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1950,
+        "y": 1100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2599cdc785705c1c",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "Enrollment Debug",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 1910,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "c55d9c69d5a7d4ba",
+        "type": "trustpoint-prepare-keystore",
+        "z": "fc669d4eef925a6b",
+        "name": "Prepare Keystore",
+        "x": 730,
+        "y": 1120,
+        "wires": [
+            [
+                "4307a35328b155b9"
+            ]
+        ]
+    },
+    {
+        "id": "784b3023c5815ab8",
+        "type": "trustpoint-store-certificate",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "/home/pi/.node-red/certs/ca-certs.p7b",
+        "filePath_fieldType": "str",
+        "x": 1040,
+        "y": 820,
+        "wires": [
+            [
+                "3082ca62a2fe2243",
+                "4843cdf8f1cff114"
+            ]
+        ]
+    },
+    {
+        "id": "4307a35328b155b9",
+        "type": "trustpoint-store-key",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "",
+        "filePath_fieldType": "str",
+        "x": 920,
+        "y": 1120,
+        "wires": [
+            [
+                "e3e65e6c988dc106"
+            ]
+        ]
+    },
+    {
+        "id": "019f5049e2aef1a5",
+        "type": "trustpoint-store-certificate",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "",
+        "filePath_fieldType": "str",
+        "x": 1700,
+        "y": 1120,
+        "wires": [
+            [
+                "b452e4949e941d58",
+                "2599cdc785705c1c"
+            ]
+        ]
+    },
+    {
+        "id": "58404244b6bedeb0",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "ec6fd9a21020733d",
+        "type": "ui_form",
+        "z": "fc669d4eef925a6b",
+        "name": "Start Provisioning Form Reenrollment",
+        "label": "Reprovision a Device",
+        "group": "018b664f4db43267",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Device ID",
+                "value": "deviceId",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Username",
+                "value": "estUsername",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "estPassword",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "deviceId": "",
+            "estUsername": "",
+            "estPassword": ""
+        },
+        "payload": "",
+        "submit": "Start Provisioning",
+        "cancel": "Cancel",
+        "topic": "",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 250,
+        "y": 1400,
+        "wires": [
+            [
+                "dfe15302592d8726"
+            ]
+        ]
+    },
+    {
+        "id": "dfe15302592d8726",
+        "type": "trustpoint-keygen",
+        "z": "fc669d4eef925a6b",
+        "name": "Generate Keys",
+        "algorithm": "RSA",
+        "keySize": "2048",
+        "persist": false,
+        "filenamePrefix": "",
+        "filenamePrefix_fieldType": "str",
+        "x": 520,
+        "y": 1400,
+        "wires": [
+            [
+                "f65b8c983af2f620"
+            ]
+        ]
+    },
+    {
+        "id": "ed53ce1007ceb24d",
+        "type": "trustpoint-create-csr",
+        "z": "fc669d4eef925a6b",
+        "name": "Create CSR",
+        "privateKey": "",
+        "privateKey_fieldType": "str",
+        "cn": "",
+        "o": "",
+        "ou": "",
+        "san": "",
+        "x": 1090,
+        "y": 1400,
+        "wires": [
+            [
+                "fcabd74c8055e95b"
+            ]
+        ]
+    },
+    {
+        "id": "fcabd74c8055e95b",
+        "type": "trustpoint-build-enroll-payload",
+        "z": "fc669d4eef925a6b",
+        "name": "Build Enroll Payload",
+        "x": 1300,
+        "y": 1400,
+        "wires": [
+            [
+                "ff4e19602a1bc9b9",
+                "3ed9ae1801020f67"
+            ]
+        ]
+    },
+    {
+        "id": "4baaa404bbcd7abe",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "018b664f4db43267",
+        "name": "Certificate Metadata Renrollment",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"padding:10px\">\n    <h4>🎓 Certificate Metadata</h4>\n    <p><b>Device ID:</b> {{msg.keystore.deviceId}}</p>\n    <p><b>Subject CN:</b> {{msg.certMeta.subjectCN}}</p>\n    <p><b>Issuer CN:</b> {{msg.certMeta.issuerCN}}</p>\n    <p><b>Valid From:</b> {{msg.certMeta.validFrom}}</p>\n    <p><b>Valid To:</b> {{msg.certMeta.validTo}}</p>\n    <p><b>Key Type:</b> {{msg.certMeta.keyType}}</p>\n    <p><b>Key Size/Curve:</b> {{msg.certMeta.keySize || msg.certMeta.curve}}</p>\n</div>\n<div style=\"margin-top:20px\">\n    <h4>📄 Full Certificate (PEM)</h4>\n    <pre\n        style=\"white-space: pre-wrap; word-break: break-word; background-color: #f7f7f7; padding: 10px; border: 1px solid #ccc;\">\n{{msg.certificate}}\n    </pre>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 2060,
+        "y": 1380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "be5aebe899dfeca4",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "Enrollment Debug",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 2010,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "f65b8c983af2f620",
+        "type": "trustpoint-prepare-keystore",
+        "z": "fc669d4eef925a6b",
+        "name": "Prepare Keystore",
+        "x": 730,
+        "y": 1400,
+        "wires": [
+            [
+                "db050ccc2d23b595"
+            ]
+        ]
+    },
+    {
+        "id": "db050ccc2d23b595",
+        "type": "trustpoint-store-key",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "",
+        "filePath_fieldType": "str",
+        "x": 920,
+        "y": 1400,
+        "wires": [
+            [
+                "ed53ce1007ceb24d"
+            ]
+        ]
+    },
+    {
+        "id": "4ae68266f236375d",
+        "type": "trustpoint-store-certificate",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "",
+        "filePath_fieldType": "str",
+        "x": 1800,
+        "y": 1400,
+        "wires": [
+            [
+                "4baaa404bbcd7abe",
+                "be5aebe899dfeca4"
+            ]
+        ]
+    },
+    {
+        "id": "ff4e19602a1bc9b9",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "3ed9ae1801020f67",
+        "type": "trustpoint-simpleenroll",
+        "z": "fc669d4eef925a6b",
+        "name": "Enroll Device",
+        "estHost": "https://127.0.0.1:443/.well-known/est/arburg/domaincredential/simpleenroll/",
+        "useBasic": false,
+        "username": "",
+        "password": "",
+        "useMtls": false,
+        "clientCert": "",
+        "clientCert_fieldType": "str",
+        "clientKey": "",
+        "clientKey_fieldType": "str",
+        "rejectUnauthorized": false,
+        "x": 1570,
+        "y": 1400,
+        "wires": [
+            [
+                "4ae68266f236375d"
+            ]
+        ]
+    },
+    {
+        "id": "1ac9a04b07ecbdcc",
+        "type": "ui_spacer",
+        "z": "fc669d4eef925a6b",
+        "name": "spacer",
+        "group": "64e68462e75b7176",
+        "order": 1,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "d57d28d770a3cbf5",
+        "type": "mqtt-broker",
+        "name": "mosquitto_mTLS",
+        "broker": "127.0.0.1",
+        "port": "8883",
+        "tls": "3a0f514a8da6848d",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "mqtt-group",
+        "type": "ui_group",
+        "name": "MQTT Monitor",
+        "tab": "mqtt-tab",
+        "order": 1,
+        "disp": true,
+        "width": "16",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "60ef3d655ef605b5",
+        "type": "ui_group",
+        "name": "Intro",
+        "tab": "e29cc6b21e4af0ec",
+        "order": 1,
+        "disp": true,
+        "width": "16",
+        "collapse": true,
+        "className": ""
+    },
+    {
+        "id": "76f842c693439b31",
+        "type": "ui_group",
+        "name": "About",
+        "tab": "ed04e5a5ae24fd77",
+        "order": 1,
+        "disp": true,
+        "width": "16",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "64e68462e75b7176",
+        "type": "ui_group",
+        "name": "Get CA",
+        "tab": "c7d1f3d0b0cc5866",
+        "order": 1,
+        "disp": true,
+        "width": "16",
+        "collapse": false,
+        "className": "<div style=\"background:#f7f7f7; border:1px solid #ccc; padding:10px; font-family:monospace; white-space:pre-wrap; max-height:300px; overflow:auto; font-size:13px;\">     {{msg.payload}} </div>"
+    },
+    {
+        "id": "ui_group_enroll",
+        "type": "ui_group",
+        "name": "Enroll Device",
+        "tab": "ui_tab_enroll",
+        "order": 1,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "018b664f4db43267",
+        "type": "ui_group",
+        "name": "Reenroll Device",
+        "tab": "3920990baa0e59a3",
+        "order": 1,
+        "disp": true,
+        "width": "20",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "3a0f514a8da6848d",
+        "type": "tls-config",
+        "name": "",
+        "cert": "/home/pi/.node-red/certs-mqtt/device-test-mqtt-cert.pem",
+        "key": "/home/pi/.node-red/keys/device-test-mqtt-key.pem",
+        "ca": "/home/pi/.node-red/certs-mqtt/ca.crt",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    },
+    {
+        "id": "mqtt-tab",
+        "type": "ui_tab",
+        "name": "MQTT Secure Monitoring",
+        "icon": "dashboard",
+        "order": 5
+    },
+    {
+        "id": "e29cc6b21e4af0ec",
+        "type": "ui_tab",
+        "name": "Welcome",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ed04e5a5ae24fd77",
+        "type": "ui_tab",
+        "name": "About the project",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "c7d1f3d0b0cc5866",
+        "type": "ui_tab",
+        "name": "Get CA",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_tab_enroll",
+        "type": "ui_tab",
+        "name": "Enrollment",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "3920990baa0e59a3",
+        "type": "ui_tab",
+        "name": "Reenrollment",
+        "icon": "dashboard",
+        "order": 6,
+        "disabled": false,
+        "hidden": false
+    }
+]
