@@ -27,7 +27,7 @@
       "trustpoint-store-certificate": "nodes/trustpoint-store-certificate.js",
       "trustpoint-store-key": "nodes/trustpoint-store-key.js",
       "trustpoint-build-enroll-payload": "nodes/trustpoint-build-enroll-payload.js",
-      "trustpoint-prepare-keystore": "nodes/trustpoint-prepare-keystore.js",
+      "trustpoint-prepare-keystore": "nodes/trustpoint-prepare-keystore.js"
     }
   },
   "author": "Ibrahim Almountaka Sambare",
