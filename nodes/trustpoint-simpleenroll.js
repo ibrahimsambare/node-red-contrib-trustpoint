@@ -6,7 +6,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        // Récupérer l'option "rejectUnauthorized" depuis l'interface (ou true par défaut)
+        // Use "rejectUnauthorized" from UI config (default: true)
         node.rejectUnauthorized = config.rejectUnauthorized !== false;
 
         node.on('input', function (msg, send, done) {
@@ -42,11 +42,11 @@ module.exports = function (RED) {
                     const cert = forge.pki.certificateFromAsn1(certAsn1);
                     const certPem = forge.pki.certificateToPem(cert);
 
-                    // ✅ Stocker dans un champ séparé
+                    // Store certificate in a separate field
                     msg.certificate = certPem;
                     msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
 
-                    // ✅ Construction propre du payload final
+                    // Clean payload with certificate and device ID
                     msg.payload = {
                         certificate: msg.certificate,
                         deviceId: msg.deviceId
@@ -55,7 +55,7 @@ module.exports = function (RED) {
                     send(msg);
                     done();
                 } catch (parseError) {
-                    node.warn('Failed to parse DER cert → fallback parse attempt...');
+                    node.warn('Failed to parse DER certificate — attempting fallback parsing...');
 
                     try {
                         const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
@@ -74,7 +74,7 @@ module.exports = function (RED) {
                         send(msg);
                         done();
                     } catch (fallbackError) {
-                        node.warn("Fallback failed — returning base64 certificate.");
+                        node.warn("Fallback failed — returning base64-encoded certificate.");
                         const base64Cert = Buffer.isBuffer(body) ? body.toString('base64') : Buffer.from(body, 'binary').toString('base64');
 
                         msg.certificate = base64Cert;
