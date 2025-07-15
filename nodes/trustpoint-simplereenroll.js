@@ -2,7 +2,7 @@ const forge = require('node-forge');
 const request = require('request');
 
 module.exports = function (RED) {
-    function TrustpointSimpleEnrollNode(config) {
+    function TrustpointSimplereenrollNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
@@ -93,5 +93,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("trustpoint-simpleenroll", TrustpointSimpleEnrollNode);
+    RED.nodes.registerType("trustpoint-simplereenroll", TrustpointSimplereenrollNode);
 };
