@@ -45,7 +45,7 @@ module.exports = function (RED) {
                 const rawDeviceId = msg.deviceId || config.deviceId || (msg.payload && msg.payload.deviceId) || "default";
                 const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
-                // 🔐 Préparation de msg.keystore
+                // Prepare msg.keystore
                 msg.keystore = msg.keystore || {};
                 msg.keystore.privateKey = privateKeyPem;
                 msg.keystore.publicKey = publicKeyPem;
@@ -53,18 +53,18 @@ module.exports = function (RED) {
                 msg.keystore.estUsername = msg.estUsername || (msg.payload && msg.payload.estUsername);
                 msg.keystore.estPassword = msg.estPassword || (msg.payload && msg.payload.estPassword);
 
-                // 📌 Sujet pour le CSR
+                // Subject for CSR
                 msg.subject = {
                     commonName: sanitizedDeviceId,
                     countryName: 'NE',
                     organizationName: 'Trustpoint'
                 };
 
-                // ✅ Nécessaire pour trustpoint-prepare-keystore
+                // Required by trustpoint-prepare-keystore
                 msg.privateKeyPem = privateKeyPem;
                 msg.publicKeyPem = publicKeyPem;
 
-                // ✅ Nécessaire pour trustpoint-store-key
+                // Required by trustpoint-store-key
                 msg.payload = msg.payload || {};
                 msg.payload.privateKey = privateKeyPem;
                 msg.payload.deviceId = sanitizedDeviceId;
