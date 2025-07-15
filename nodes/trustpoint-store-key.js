@@ -8,15 +8,17 @@ module.exports = function(RED) {
 
         node.on('input', function(msg) {
             try {
-                const deviceId = msg.payload.deviceId;
-                const privateKey = msg.payload.privateKey;
+                const privateKey = msg.payload?.privateKey;
+                const filePath = msg.filePath;
 
-                if (!deviceId || !privateKey) {
-                    node.error("Missing deviceId or privateKey in msg.payload", msg);
+                if (!privateKey || !filePath) {
+                    node.error("Missing privateKey in msg.payload or filePath in msg", msg);
                     return;
                 }
 
-                const filePath = path.join("/home/pi/.node-red/keys", `${deviceId}-key.pem`);
+                const dir = path.dirname(filePath);
+                fs.mkdirSync(dir, { recursive: true });
+
                 fs.writeFileSync(filePath, privateKey);
 
                 msg.payload = {
