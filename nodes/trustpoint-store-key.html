@@ -6,8 +6,8 @@
 
     <div class="form-row">
         <label for="node-input-filePath"><i class="fa fa-folder"></i> Key File Path</label>
-        <input type="text" id="node-input-filePath" placeholder="/path/to/device-key.pem" style="width:250px;">
-        <input type="hidden" id="node-input-filePath_fieldType">
+        <input type="text" id="node-input-filePath" style="width:250px;">
+        <input type="hidden" id="node-input-filePathType">
     </div>
 
     <div id="path-preview" class="validation-result">
@@ -41,8 +41,8 @@
             color: '#e6ee9c',
             defaults: {
                 name: { value: "" },
-                filePath: { value: "" },
-                filePath_fieldType: { value: "str" }
+                filePath: { value: "", required: true },
+                filePathType: { value: "str" }
             },
             inputs: 1,
             outputs: 1,
@@ -57,7 +57,7 @@
                 $("#node-input-filePath").typedInput({
                     default: 'str',
                     types: ['msg', 'str', 'flow', 'global'],
-                    typeField: $("#node-input-filePath_fieldType")
+                    typeField: "#node-input-filePathType"
                 });
 
                 function updatePathPreview() {
@@ -73,6 +73,7 @@
                 }
 
                 $("#node-input-filePath").on("change", updatePathPreview);
+                $("#node-input-filePathType").on("change", updatePathPreview);
                 updatePathPreview();
             }
         });
