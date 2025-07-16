@@ -1,0 +1,96 @@
+[
+    {
+        "id": "b12924a6a4383f68",
+        "type": "tab",
+        "label": "KeyGen & Store",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "a49020b1237bf146",
+        "type": "trustpoint-keygen",
+        "z": "b12924a6a4383f68",
+        "name": "Generate Keys",
+        "algorithm": "RSA",
+        "keySize": "2048",
+        "persist": false,
+        "filenamePrefix": "",
+        "filenamePrefix_fieldType": "str",
+        "x": 600,
+        "y": 380,
+        "wires": [
+            [
+                "babc1f074df6e0c7"
+            ]
+        ]
+    },
+    {
+        "id": "babc1f074df6e0c7",
+        "type": "trustpoint-prepare-keystore",
+        "z": "b12924a6a4383f68",
+        "name": "Prepare Keystore",
+        "x": 810,
+        "y": 380,
+        "wires": [
+            [
+                "04df9e4c9c3659ea"
+            ]
+        ]
+    },
+    {
+        "id": "04df9e4c9c3659ea",
+        "type": "trustpoint-store-key",
+        "z": "b12924a6a4383f68",
+        "name": "Store key",
+        "filePath": "home/pi/Downloads",
+        "filePathType": "str",
+        "x": 1000,
+        "y": 380,
+        "wires": [
+            [
+                "f6685dfaa4e459f7"
+            ]
+        ]
+    },
+    {
+        "id": "f6685dfaa4e459f7",
+        "type": "debug",
+        "z": "b12924a6a4383f68",
+        "name": "Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 1150,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "08e2182bc04b70aa",
+        "type": "inject",
+        "z": "b12924a6a4383f68",
+        "name": "Start Test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"deviceId\":\"test-device-001\",\"estUsername\":\"testuser\",\"estPassword\":\"testpass\"}",
+        "payloadType": "json",
+        "x": 420,
+        "y": 380,
+        "wires": [
+            [
+                "a49020b1237bf146"
+            ]
+        ]
+    }
+]
