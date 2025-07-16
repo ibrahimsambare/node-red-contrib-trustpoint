@@ -16,16 +16,20 @@ module.exports = function(RED) {
                     return;
                 }
 
-                // Dossier Node-RED utilisateur
-                const userDir = RED.settings.userDir || process.cwd();
-                const keyDir = path.join(userDir, "keys");
+                // Détermination du dossier de base
+                let baseDir = config.filePath?.trim();
 
-                // Crée le dossier si nécessaire
-                if (!fs.existsSync(keyDir)) {
-                    fs.mkdirSync(keyDir, { recursive: true });
+                if (!baseDir) {
+                    // fallback vers le répertoire Node-RED de l'utilisateur
+                    baseDir = path.join(RED.settings.userDir || process.cwd(), "keys");
                 }
 
-                const filePath = path.join(keyDir, `${deviceId}-key.pem`);
+                // Création du dossier s’il n’existe pas
+                if (!fs.existsSync(baseDir)) {
+                    fs.mkdirSync(baseDir, { recursive: true });
+                }
+
+                const filePath = path.join(baseDir, `${deviceId}-key.pem`);
                 fs.writeFileSync(filePath, privateKey);
 
                 msg.payload = {
