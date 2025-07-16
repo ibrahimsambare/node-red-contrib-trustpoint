@@ -17,12 +17,23 @@ module.exports = function (RED) {
                     return;
                 }
 
-                // Automatically determine file storage path
-                const filePath = path.join("/home/pi/.node-red/certs", `${deviceId}-cert.pem`);
+                // Determine target directory
+                let baseDir = config.filePath?.trim();
+                if (!baseDir) {
+                    baseDir = path.join(RED.settings.userDir || process.cwd(), "certs");
+                }
+
+                // Ensure directory exists
+                if (!fs.existsSync(baseDir)) {
+                    fs.mkdirSync(baseDir, { recursive: true });
+                }
+
+                // Save certificate
+                const filePath = path.join(baseDir, `${deviceId}-cert.pem`);
                 fs.writeFileSync(filePath, certPem, 'utf8');
                 node.log(`Certificate stored at: ${filePath}`);
 
-                // Extract metadata using node-forge
+                // Extract certificate metadata
                 const cert = forge.pki.certificateFromPem(certPem);
 
                 msg.certMeta = {
