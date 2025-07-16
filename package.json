@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-trustpoint",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Node-RED nodes for EST (Enrollment over Secure Transport) and certificate operations.",
   "keywords": [
     "node-red",
