@@ -41,7 +41,7 @@
             color: '#e6ee9c',
             defaults: {
                 name: { value: "" },
-                filePath: { value: "", required: true },
+                filePath: { value: "", required: false },
                 filePathType: { value: "str" }
             },
             inputs: 1,
@@ -67,8 +67,8 @@
                         box.text("Target file path: " + path);
                         box.removeClass("validation-error").addClass("validation-box validation-info");
                     } else {
-                        box.text("No path defined.");
-                        box.removeClass("validation-info").addClass("validation-box validation-error");
+                        box.text("No path defined – default directory will be used.");
+                        box.removeClass("validation-error").addClass("validation-box validation-info");
                     }
                 }
 
