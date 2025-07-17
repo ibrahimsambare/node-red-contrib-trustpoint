@@ -8,7 +8,7 @@ module.exports = function (RED) {
 
     node.on("input", function (msg, send, done) {
       const certsDir = path.resolve(__dirname, "../../certs");
-      const filePath = path.join(certsDir, "ca-cert.pem"); // assure-toi que ce fichier existe et contient un certificat PEM valide
+      const filePath = path.join(certsDir, "ca-cert.p7b"); // assure-toi que ce fichier existe et contient un certificat PEM valide
 
       try {
         const certData = fs.readFileSync(filePath, "utf8");
