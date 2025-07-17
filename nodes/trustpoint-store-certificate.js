@@ -9,31 +9,39 @@ module.exports = function (RED) {
 
         node.on('input', function (msg, send, done) {
             try {
-                const certPem = msg.payload?.certificate;
+                let certPem = msg.payload?.certificate;
                 const deviceId = msg.payload?.deviceId || msg.deviceId || 'unknown-device';
 
-                if (!certPem || !certPem.includes("BEGIN CERTIFICATE")) {
-                    node.error("Missing or invalid PEM certificate in msg.payload.certificate", msg);
+                if (!certPem) {
+                    node.error("Missing certificate in msg.payload.certificate", msg);
                     return;
                 }
 
-                // Determine target directory
+                // Convert base64 to PEM if necessary
+                if (!certPem.includes("BEGIN CERTIFICATE")) {
+                    node.warn("Certificate in base64 detected — converting to PEM");
+                    certPem = "-----BEGIN CERTIFICATE-----\n" +
+                        certPem.match(/.{1,64}/g).join("\n") +
+                        "\n-----END CERTIFICATE-----";
+                }
+
+                // Définir le répertoire cible
                 let baseDir = config.filePath?.trim();
                 if (!baseDir) {
                     baseDir = path.join(RED.settings.userDir || process.cwd(), "certs");
                 }
 
-                // Ensure directory exists
+                // Créer le dossier s’il n’existe pas
                 if (!fs.existsSync(baseDir)) {
                     fs.mkdirSync(baseDir, { recursive: true });
                 }
 
-                // Save certificate
+                // Sauvegarde du certificat
                 const filePath = path.join(baseDir, `${deviceId}-cert.pem`);
                 fs.writeFileSync(filePath, certPem, 'utf8');
                 node.log(`Certificate stored at: ${filePath}`);
 
-                // Extract certificate metadata
+                // Extraction des métadonnées du certificat
                 const cert = forge.pki.certificateFromPem(certPem);
 
                 msg.certMeta = {
