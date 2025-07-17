@@ -22,7 +22,7 @@ module.exports = function (RED) {
                 const csr = forge.pki.createCertificationRequest();
                 csr.publicKey = publicKey;
 
-                // ✅ Subject plus complet pour répondre aux exigences serveur EST
+                // ✅ Subject complet conforme aux exigences EST
                 csr.setSubject([
                     { name: 'commonName', value: deviceId },
                     { name: 'countryName', value: 'NE' },
@@ -30,12 +30,12 @@ module.exports = function (RED) {
                     { name: 'organizationalUnitName', value: 'IoT Devices' }
                 ]);
 
-                // ✅ Vérifie la validité avant signature (important)
-                if (!csr.verify()) {
-                    throw new Error("CSR verification failed before signing.");
-                }
-
+                // ✅ Signature avant vérification
                 csr.sign(privateKey);
+
+                if (!csr.verify()) {
+                    throw new Error("CSR verification failed after signing.");
+                }
 
                 const csrPem = forge.pki.certificationRequestToPem(csr);
                 const csrDer = forge.asn1.toDer(forge.pki.certificationRequestToAsn1(csr)).getBytes();
