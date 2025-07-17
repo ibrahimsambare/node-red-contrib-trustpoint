@@ -319,7 +319,7 @@ Developer of `node-red-contrib-trustpoint`
 Phase 1 — Trustpoint Project (ProductionLab Wall demo)  
 2025
 
-GitHub: [https://github.com/ton-profil-github](https://github.com/ton-profil-github)  
+GitHub: [https://github.com/ton-profil-github](https://github.com/ibrahimsambare)  
 Email: <ibrahim.realmountaka@campus-schwartwald.de>
 
 
