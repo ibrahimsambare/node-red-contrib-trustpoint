@@ -8,17 +8,16 @@ module.exports = function (RED) {
 
     node.on("input", function (msg, send, done) {
       const certsDir = path.resolve(__dirname, "../../certs");
-      const filePath = path.join(certsDir, "ca-certs.p7b");
+      const filePath = path.join(certsDir, "ca-cert.pem"); // assure-toi que ce fichier existe et contient un certificat PEM valide
 
       try {
-        const raw = fs.readFileSync(filePath, { encoding: "base64" });
-        const wrapped = [
-          "-----BEGIN CERTIFICATE-----",
-          raw.match(/.{1,64}/g).join("\n"),
-          "-----END CERTIFICATE-----"
-        ].join("\n");
+        const certData = fs.readFileSync(filePath, "utf8");
 
-        msg.payload = wrapped;
+        msg.payload = {
+          certificate: certData,
+          deviceId: msg.deviceId || "trustpoint-ca"
+        };
+
         send(msg);
         if (done) done();
       } catch (err) {
