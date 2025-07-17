@@ -6,7 +6,6 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        // Use "rejectUnauthorized" from UI config (default: true)
         node.rejectUnauthorized = config.rejectUnauthorized !== false;
 
         node.on('input', function (msg, send, done) {
@@ -42,11 +41,9 @@ module.exports = function (RED) {
                     const cert = forge.pki.certificateFromAsn1(certAsn1);
                     const certPem = forge.pki.certificateToPem(cert);
 
-                    // Store certificate in a separate field
                     msg.certificate = certPem;
                     msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
 
-                    // Clean payload with certificate and device ID
                     msg.payload = {
                         certificate: msg.certificate,
                         deviceId: msg.deviceId
@@ -55,15 +52,21 @@ module.exports = function (RED) {
                     send(msg);
                     done();
                 } catch (parseError) {
-                    node.warn('Failed to parse DER certificate — attempting fallback parsing...');
+                    node.warn('Failed to parse DER certificate — attempting fallback parsing as PKCS#7...');
 
                     try {
                         const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
-                        const certAsn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
-                        const cert = forge.pki.certificateFromAsn1(certAsn1);
-                        const certPemFallback = forge.pki.certificateToPem(cert);
+                        const asn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
+                        const pkcs7 = forge.pkcs7.messageFromAsn1(asn1);
 
-                        msg.certificate = certPemFallback;
+                        if (!pkcs7.certificates || pkcs7.certificates.length === 0) {
+                            throw new Error("No certificates found in PKCS#7 message");
+                        }
+
+                        const cert = pkcs7.certificates[0];
+                        const certPem = forge.pki.certificateToPem(cert);
+
+                        msg.certificate = certPem;
                         msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
 
                         msg.payload = {
@@ -73,8 +76,8 @@ module.exports = function (RED) {
 
                         send(msg);
                         done();
-                    } catch (fallbackError) {
-                        node.warn("Fallback failed — returning base64-encoded certificate.");
+                    } catch (pkcs7Error) {
+                        node.warn("PKCS#7 parsing failed — returning base64-encoded certificate.");
                         const base64Cert = Buffer.isBuffer(body) ? body.toString('base64') : Buffer.from(body, 'binary').toString('base64');
 
                         msg.certificate = base64Cert;
