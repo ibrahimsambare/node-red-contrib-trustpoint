@@ -14,17 +14,20 @@ module.exports = function (RED) {
       };
 
       https.get(estUrl, options, (res) => {
-        let chunks = [];
+        const chunks = [];
 
         res.on("data", (chunk) => chunks.push(chunk));
-
         res.on("end", () => {
           try {
             const der = Buffer.concat(chunks);
-            const p7asn1 = forge.asn1.fromDer(der.toString("binary"), true); // ⚠️ strict = true
-            const pkcs7 = forge.pkcs7.messageFromAsn1(p7asn1);
+            const asn1 = forge.asn1.fromDer(der.toString('binary'), false); // strict=false volontaire
+            const p7 = forge.pkcs7.messageFromAsn1(asn1);
 
-            const certsPem = pkcs7.certificates.map(cert =>
+            if (!p7.certificates || p7.certificates.length === 0) {
+              throw new Error("No certificates found in PKCS#7 response");
+            }
+
+            const certsPem = p7.certificates.map(cert =>
               forge.pki.certificateToPem(cert)
             ).join("");
 
