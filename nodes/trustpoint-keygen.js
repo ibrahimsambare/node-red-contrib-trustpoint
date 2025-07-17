@@ -37,7 +37,7 @@ module.exports = function (RED) {
 
                 if (persist) {
                     const dir = path.join(__dirname, '..', 'keys');
-                    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+                    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
                     fs.writeFileSync(path.join(dir, `${filenamePrefix}_private.pem`), privateKeyPem);
                     fs.writeFileSync(path.join(dir, `${filenamePrefix}_public.pem`), publicKeyPem);
                 }
@@ -45,26 +45,26 @@ module.exports = function (RED) {
                 const rawDeviceId = msg.deviceId || config.deviceId || (msg.payload && msg.payload.deviceId) || "default";
                 const sanitizedDeviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
-                // Prepare msg.keystore
+                // Ajout de la promotion des credentials
+                msg.estUsername = msg.payload?.estUsername;
+                msg.estPassword = msg.payload?.estPassword;
+
                 msg.keystore = msg.keystore || {};
                 msg.keystore.privateKey = privateKeyPem;
                 msg.keystore.publicKey = publicKeyPem;
                 msg.keystore.deviceId = rawDeviceId;
-                msg.keystore.estUsername = msg.estUsername || (msg.payload && msg.payload.estUsername);
-                msg.keystore.estPassword = msg.estPassword || (msg.payload && msg.payload.estPassword);
+                msg.keystore.estUsername = msg.estUsername;
+                msg.keystore.estPassword = msg.estPassword;
 
-                // Subject for CSR
                 msg.subject = {
                     commonName: sanitizedDeviceId,
                     countryName: 'NE',
                     organizationName: 'Trustpoint'
                 };
 
-                // Required by trustpoint-prepare-keystore
                 msg.privateKeyPem = privateKeyPem;
                 msg.publicKeyPem = publicKeyPem;
 
-                // Required by trustpoint-store-key
                 msg.payload = msg.payload || {};
                 msg.payload.privateKey = privateKeyPem;
                 msg.payload.deviceId = sanitizedDeviceId;
