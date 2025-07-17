@@ -21,7 +21,20 @@ module.exports = function (RED) {
 
                 const csr = forge.pki.createCertificationRequest();
                 csr.publicKey = publicKey;
-                csr.setSubject([{ name: 'commonName', value: deviceId }]);
+
+                // ✅ Subject plus complet pour répondre aux exigences serveur EST
+                csr.setSubject([
+                    { name: 'commonName', value: deviceId },
+                    { name: 'countryName', value: 'NE' },
+                    { name: 'organizationName', value: 'Trustpoint' },
+                    { name: 'organizationalUnitName', value: 'IoT Devices' }
+                ]);
+
+                // ✅ Vérifie la validité avant signature (important)
+                if (!csr.verify()) {
+                    throw new Error("CSR verification failed before signing.");
+                }
+
                 csr.sign(privateKey);
 
                 const csrPem = forge.pki.certificationRequestToPem(csr);
