@@ -27,13 +27,17 @@ module.exports = function (RED) {
             "-----BEGIN CERTIFICATE-----",
             base64.match(/.{1,64}/g).join("\n"),
             "-----END CERTIFICATE-----"
-          ].join("\n");
+          ].join("\n");} 
 
-          msg.payload = pem;
-          msg.payload.certificate = pem;
-          
-          send(msg);
-          if (done) done();
+          try {
+        const pem = fs.readFileSync(certPath, "utf8");
+        msg.payload = {
+          certificate: pem,
+          deviceId: "ca-cert"
+        };
+
+        send(msg);
+        if (done) done();
         });
       }).on("error", (err) => {
         node.error("Failed to fetch CA certs: " + err.message, msg);
