@@ -29,7 +29,9 @@ module.exports = function (RED) {
             "-----END CERTIFICATE-----"
           ].join("\n");
 
+          msg.payload = pem;
           msg.payload.certificate = pem;
+          
           send(msg);
           if (done) done();
         });
