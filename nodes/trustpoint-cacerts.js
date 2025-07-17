@@ -10,35 +10,26 @@ module.exports = function (RED) {
       const estUrl = msg.estHost || config.estHost || "https://127.0.0.1/.well-known/est/cacerts";
 
       const options = {
-        method: "GET",
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
       };
 
       https.get(estUrl, options, (res) => {
-        const chunks = [];
+        let chunks = [];
 
-        res.on("data", (chunk) => {
-          chunks.push(chunk);
-        });
+        res.on("data", (chunk) => chunks.push(chunk));
 
         res.on("end", () => {
           try {
-            const raw = Buffer.concat(chunks);
-            const der = raw.toString("binary");
+            const der = Buffer.concat(chunks);
+            const p7asn1 = forge.asn1.fromDer(der.toString("binary"), true); // ⚠️ strict = true
+            const pkcs7 = forge.pkcs7.messageFromAsn1(p7asn1);
 
-            // Parse as PKCS#7 bundle
-            const p7asn1 = forge.asn1.fromDer(der, true);
-            const p7 = forge.pkcs7.messageFromAsn1(p7asn1);
-
-            if (!p7.certificates || p7.certificates.length === 0) {
-              throw new Error("No certificates found in PKCS#7 response");
-            }
-
-            // Convert each certificate to PEM
-            const pemCerts = p7.certificates.map(cert => forge.pki.certificateToPem(cert));
+            const certsPem = pkcs7.certificates.map(cert =>
+              forge.pki.certificateToPem(cert)
+            ).join("");
 
             msg.payload = {
-              certificate: pemCerts.join("\n"),
+              certificate: certsPem,
               deviceId: "ca-cert"
             };
 
