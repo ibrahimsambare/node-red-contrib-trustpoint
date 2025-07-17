@@ -6,7 +6,6 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        // Use "rejectUnauthorized" from UI config (default: true)
         node.rejectUnauthorized = config.rejectUnauthorized !== false;
 
         node.on('input', function (msg, send, done) {
@@ -36,58 +35,36 @@ module.exports = function (RED) {
             request(options, (error, response, body) => {
                 if (error) return done(error);
 
+                const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
+
                 try {
-                    const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
+                    // Tentative de parsing en DER
                     const certAsn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
                     const cert = forge.pki.certificateFromAsn1(certAsn1);
                     const certPem = forge.pki.certificateToPem(cert);
 
-                    // Store certificate in a separate field
-                    msg.certificate = certPem;
-                    msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
-
-                    // Clean payload with certificate and device ID
                     msg.payload = {
-                        certificate: msg.certificate,
-                        deviceId: msg.deviceId
+                        certificate: certPem,
+                        deviceId: msg.deviceId || msg.keystore?.deviceId || undefined,
+                        format: "pem"
                     };
 
                     send(msg);
                     done();
+
                 } catch (parseError) {
-                    node.warn('Failed to parse DER certificate — attempting fallback parsing...');
+                    node.warn("Failed to parse DER certificate — attempting base64 fallback...");
 
-                    try {
-                        const derBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body, 'binary');
-                        const certAsn1 = forge.asn1.fromDer(derBuffer.toString('binary'));
-                        const cert = forge.pki.certificateFromAsn1(certAsn1);
-                        const certPemFallback = forge.pki.certificateToPem(cert);
+                    const base64Cert = derBuffer.toString('base64');
 
-                        msg.certificate = certPemFallback;
-                        msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
+                    msg.payload = {
+                        certificate: base64Cert,
+                        deviceId: msg.deviceId || msg.keystore?.deviceId || undefined,
+                        format: "base64"
+                    };
 
-                        msg.payload = {
-                            certificate: msg.certificate,
-                            deviceId: msg.deviceId
-                        };
-
-                        send(msg);
-                        done();
-                    } catch (fallbackError) {
-                        node.warn("Fallback failed — returning base64-encoded certificate.");
-                        const base64Cert = Buffer.isBuffer(body) ? body.toString('base64') : Buffer.from(body, 'binary').toString('base64');
-
-                        msg.certificate = base64Cert;
-                        msg.deviceId = msg.deviceId || msg.keystore?.deviceId || (msg.payload && msg.payload.deviceId);
-
-                        msg.payload = {
-                            certificate: msg.certificate,
-                            deviceId: msg.deviceId
-                        };
-
-                        send(msg);
-                        done();
-                    }
+                    send(msg);
+                    done();
                 }
             });
         });
