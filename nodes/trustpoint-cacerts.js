@@ -27,7 +27,7 @@ module.exports = function (RED) {
             const der = raw.toString("binary");
 
             // Parse as PKCS#7 bundle
-            const p7asn1 = forge.asn1.fromDer(der);
+            const p7asn1 = forge.asn1.fromDer(der, true);
             const p7 = forge.pkcs7.messageFromAsn1(p7asn1);
 
             if (!p7.certificates || p7.certificates.length === 0) {
