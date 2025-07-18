@@ -19,7 +19,7 @@ module.exports = function (RED) {
         ].join("\n");
 
         msg.certificate = wrapped;
-        msg.deviceId = cacert;
+        msg.deviceId = "cacert";
 
         msg.payload = {
           certificate: msg.certificate,
