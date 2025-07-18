@@ -1,54 +1,30 @@
-const https = require("https");
-const forge = require("node-forge");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = function (RED) {
   function TrustpointCACertsNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
 
-    node.on("input", (msg, send, done) => {
-      const estUrl = msg.estHost || config.estHost || "https://127.0.0.1/.well-known/est/cacerts";
+    node.on("input", function (msg, send, done) {
+      const certsDir = path.resolve(__dirname, "../../certs");
+      const filePath = path.join(certsDir, "ca-certs.p7b");
 
-      const options = {
-        rejectUnauthorized: false
-      };
+      try {
+        const raw = fs.readFileSync(filePath, { encoding: "base64" });
+        const wrapped = [
+          "-----BEGIN CERTIFICATE-----",
+          raw.match(/.{1,64}/g).join("\n"),
+          "-----END CERTIFICATE-----"
+        ].join("\n");
 
-      https.get(estUrl, options, (res) => {
-        const chunks = [];
-
-        res.on("data", (chunk) => chunks.push(chunk));
-
-        res.on("end", () => {
-          try {
-            const rawBuffer = Buffer.concat(chunks);
-            const binary = rawBuffer.toString("binary");
-
-            // Parse DER with strict = false (allow trailing bytes)
-            const asn1 = forge.asn1.fromDer(binary, false);
-            const pkcs7 = forge.pkcs7.messageFromAsn1(asn1);
-
-            if (!pkcs7.certificates || pkcs7.certificates.length === 0) {
-              throw new Error("No certificates found in response.");
-            }
-
-            const pemBundle = pkcs7.certificates.map(cert => forge.pki.certificateToPem(cert)).join("\n");
-
-            msg.payload = {
-              certificate: pemBundle,
-              deviceId: "ca-cert"
-            };
-
-            send(msg);
-            if (done) done();
-          } catch (err) {
-            node.error("❌ Failed to process CA certs: " + err.message, msg);
-            if (done) done(err);
-          }
-        });
-      }).on("error", (err) => {
-        node.error("❌ HTTPS request failed: " + err.message, msg);
+        msg.payload = wrapped;
+        send(msg);
+        if (done) done();
+      } catch (err) {
+        node.error("Failed to read CA certificate", err);
         if (done) done(err);
-      });
+      }
     });
   }
 
