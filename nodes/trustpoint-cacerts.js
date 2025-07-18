@@ -18,7 +18,7 @@ module.exports = function (RED) {
           "-----END CERTIFICATE-----"
         ].join("\n");
 
-        msg.payload.certificate = wrapped;
+        msg.payload = wrapped;
         send(msg);
         if (done) done();
       } catch (err) {
