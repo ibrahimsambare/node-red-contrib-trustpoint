@@ -1,0 +1,20 @@
+<script type="text/javascript">
+  RED.nodes.registerType('trustpoint-store-ca', {
+    category: 'Trustpoint',
+    color: '#e2d96e',
+    defaults: {
+      name: { value: "" }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-certificate",
+    label: function () {
+      return this.name || "Store CA Cert";
+    }
+  });
+</script>
+
+<div class="form-row">
+  <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+  <input type="text" id="node-input-name" placeholder="Name">
+</div>
