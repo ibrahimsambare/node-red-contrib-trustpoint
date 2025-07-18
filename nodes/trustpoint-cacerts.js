@@ -1,6 +1,5 @@
-const fs = require("fs");
-const path = require("path");
 const https = require("https");
+const forge = require("node-forge");
 
 module.exports = function (RED) {
   function TrustpointCACertsNode(config) {
@@ -8,49 +7,54 @@ module.exports = function (RED) {
     const node = this;
 
     node.on("input", function (msg, send, done) {
-      const certsDir = path.resolve(__dirname, "../../certs");
-      const filePath = path.join(certsDir, "ca-cert.p7b"); // assure-toi que ce fichier existe et contient un certificat PEM valide
-      const estUrl = msg.estHost || "https://127.0.0.1/.well-known/est/cacerts";
+      const estHost = msg.estHost || config.estHost || "https://127.0.0.1/.well-known/est/cacerts";
 
-      try {
-        const certData = fs.readFileSync(filePath, "utf8");
       const options = {
         method: "GET",
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
       };
 
-        msg.payload = {
-          certificate: certData,
-          deviceId: msg.deviceId || "trustpoint-ca"
-        };
-      https.get(estUrl, options, (res) => {
+      https.get(estHost, options, (res) => {
         let chunks = [];
 
-        send(msg);
-        if (done) done();
-      } catch (err) {
-        node.error("Failed to read CA certificate", err);
         res.on("data", (chunk) => {
           chunks.push(chunk);
         });
 
         res.on("end", () => {
-          const raw = Buffer.concat(chunks);
-          const base64 = raw.toString("base64");
-          const pem = [
-            "-----BEGIN CERTIFICATE-----",
-            base64.match(/.{1,64}/g).join("\n"),
-            "-----END CERTIFICATE-----"
-          ].join("\n");
+          try {
+            const raw = Buffer.concat(chunks);
+            const rawBinary = raw.toString("binary");
 
-          msg.payload = pem;
-          send(msg);
-          if (done) done();
+            // Parse DER as ASN.1 (strict mode = false)
+            const asn1 = forge.asn1.fromDer(rawBinary, false);
+            const p7 = forge.pkcs7.messageFromAsn1(asn1);
+
+            if (!p7.certificates || p7.certificates.length === 0) {
+              throw new Error("No certificates found in PKCS#7 message.");
+            }
+
+            // Convert all certificates to PEM
+            const certsPem = p7.certificates.map(cert => forge.pki.certificateToPem(cert)).join("\n");
+
+            msg.payload = {
+              certificate: certsPem,
+              deviceId: "ca-cert"
+            };
+
+            send(msg);
+            if (done) done();
+          } catch (err) {
+            node.error("❌ Failed to process CA certs: " + err.message, msg);
+            if (done) done(err);
+          }
         });
       }).on("error", (err) => {
-        node.error("Failed to fetch CA certs: " + err.message, msg);
+        node.error("❌ Failed to fetch CA certs: " + err.message, msg);
         if (done) done(err);
-      }
       });
     });
   }
+
+  RED.nodes.registerType("trustpoint-cacerts", TrustpointCACertsNode);
+};
