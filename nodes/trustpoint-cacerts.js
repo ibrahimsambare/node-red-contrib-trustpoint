@@ -15,7 +15,7 @@ module.exports = function (RED) {
       };
 
       https.get(estHost, options, (res) => {
-        let chunks = [];
+        const chunks = [];
 
         res.on("data", (chunk) => {
           chunks.push(chunk);
@@ -24,18 +24,22 @@ module.exports = function (RED) {
         res.on("end", () => {
           try {
             const raw = Buffer.concat(chunks);
+
+            // 🔄 Convert raw to binary string
             const rawBinary = raw.toString("binary");
 
-            // Parse DER as ASN.1 (strict mode = false)
-            const asn1 = forge.asn1.fromDer(rawBinary, false);
+            // ✅ Parse DER with strict = false to allow trailing bytes
+            const asn1 = forge.asn1.fromDer(rawBinary, false); // strict = false
+
             const p7 = forge.pkcs7.messageFromAsn1(asn1);
 
             if (!p7.certificates || p7.certificates.length === 0) {
-              throw new Error("No certificates found in PKCS#7 message.");
+              throw new Error("No certificates found in PKCS#7 container.");
             }
 
-            // Convert all certificates to PEM
-            const certsPem = p7.certificates.map(cert => forge.pki.certificateToPem(cert)).join("\n");
+            const certsPem = p7.certificates
+              .map(cert => forge.pki.certificateToPem(cert))
+              .join("\n");
 
             msg.payload = {
               certificate: certsPem,
