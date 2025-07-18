@@ -1,20 +1,81 @@
-<script type="text/javascript">
-  RED.nodes.registerType('trustpoint-store-ca', {
-    category: 'Trustpoint',
-    color: '#e2d96e',
-    defaults: {
-      name: { value: "" }
-    },
-    inputs: 1,
-    outputs: 1,
-    icon: "font-awesome/fa-certificate",
-    label: function () {
-      return this.name || "Store CA Cert";
-    }
-  });
+<script type="text/html" data-template-name="trustpoint-store-ca">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Node name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-filePath"><i class="fa fa-folder"></i> CA File Path</label>
+        <input type="text" id="node-input-filePath" style="width: 250px;">
+        <input type="hidden" id="node-input-filePathType">
+    </div>
+
+    <div id="path-preview" class="validation-result">
+        <div class="validation-box" id="path-preview-box"></div>
+    </div>
 </script>
 
-<div class="form-row">
-  <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-  <input type="text" id="node-input-name" placeholder="Name">
-</div>
+<style>
+    .validation-box {
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: normal;
+    }
+
+    .validation-info {
+        background-color: #4cafaf;
+        color: white;
+    }
+
+    .validation-error {
+        background-color: #f44336;
+        color: white;
+    }
+</style>
+
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('trustpoint-store-ca', {
+            category: 'Trustpoint',
+            color: '#ffe082',
+            defaults: {
+                name: { value: "" },
+                filePath: { value: "", required: false },
+                filePathType: { value: "str" }
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "font-awesome/fa-certificate",
+            label: function () {
+                return this.name || "store-ca";
+            },
+            labelStyle: function () {
+                return this.name ? "node_label_italic" : "";
+            },
+            oneditprepare: function () {
+                $("#node-input-filePath").typedInput({
+                    default: 'str',
+                    types: ['msg', 'str', 'flow', 'global'],
+                    typeField: "#node-input-filePathType"
+                });
+
+                function updatePathPreview() {
+                    const path = $("#node-input-filePath").val();
+                    const box = $("#path-preview-box");
+                    if (path) {
+                        box.text("Target CA file path: " + path);
+                        box.removeClass("validation-error").addClass("validation-box validation-info");
+                    } else {
+                        box.text("No path defined – default 'ca-cert.pem' will be used.");
+                        box.removeClass("validation-error").addClass("validation-box validation-info");
+                    }
+                }
+
+                $("#node-input-filePath").on("change", updatePathPreview);
+                $("#node-input-filePathType").on("change", updatePathPreview);
+                updatePathPreview();
+            }
+        });
+    })();
+</script>
