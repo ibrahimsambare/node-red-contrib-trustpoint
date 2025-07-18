@@ -18,7 +18,14 @@ module.exports = function (RED) {
           "-----END CERTIFICATE-----"
         ].join("\n");
 
-        msg.payload = wrapped;
+        msg.certificate = wrapped;
+        msg.deviceId = cacert;
+
+        msg.payload = {
+          certificate: msg.certificate,
+          deviceId: msg.deviceId
+        }
+            
         send(msg);
         if (done) done();
       } catch (err) {
