@@ -1,5 +1,5 @@
+const { exec } = require("child_process");
 const fs = require("fs");
-const path = require("path");
 
 module.exports = function (RED) {
   function TrustpointCACertsNode(config) {
@@ -7,31 +7,40 @@ module.exports = function (RED) {
     const node = this;
 
     node.on("input", function (msg, send, done) {
-      const certsDir = path.resolve(__dirname, "../../certs");
-      const filePath = path.join(certsDir, "ca-certs.p7b");
+      const url = msg.estHost || config.estHost || "https://127.0.0.1:443/.well-known/est/arburg/cacerts/";
+      const outputDir = "/tmp";
+      const p7bPath = `${outputDir}/cacerts.p7b`;
+      const pemPath = `${outputDir}/cacerts.pem`;
 
-      try {
-        const raw = fs.readFileSync(filePath, { encoding: "base64" });
-        const wrapped = [
-          "-----BEGIN CERTIFICATE-----",
-          raw.match(/.{1,64}/g).join("\n"),
-          "-----END CERTIFICATE-----"
-        ].join("\n");
+      const curlCmd = `curl -k -X GET "${url}" -H "Accept: application/pkcs7-mime" | base64 --decode > ${p7bPath}`;
+      const opensslCmd = `openssl pkcs7 -print_certs -inform DER -in ${p7bPath} -out ${pemPath}`;
 
-        msg.certificate = wrapped;
-        msg.deviceId = "cacert";
-
-        msg.payload = {
-          certificate: msg.certificate,
-          deviceId: msg.deviceId
+      exec(curlCmd, (curlErr) => {
+        if (curlErr) {
+          node.error("❌ Curl failed: " + curlErr.message, msg);
+          return done(curlErr);
         }
-            
-        send(msg);
-        if (done) done();
-      } catch (err) {
-        node.error("Failed to read CA certificate", err);
-        if (done) done(err);
-      }
+
+        exec(opensslCmd, (opensslErr) => {
+          if (opensslErr) {
+            node.error("❌ OpenSSL failed: " + opensslErr.message, msg);
+            return done(opensslErr);
+          }
+
+          try {
+            const certs = fs.readFileSync(pemPath, "utf8");
+            msg.payload = {
+              certificate: certs,
+              deviceId: "ca-cert"
+            };
+            send(msg);
+            if (done) done();
+          } catch (readErr) {
+            node.error("❌ Failed to read PEM file: " + readErr.message, msg);
+            done(readErr);
+          }
+        });
+      });
     });
   }
 
