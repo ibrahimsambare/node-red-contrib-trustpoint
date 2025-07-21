@@ -20,9 +20,9 @@
         "userProps": "",
         "correl": "",
         "expiry": "",
-        "broker": "d57d28d770a3cbf5",
-        "x": 780,
-        "y": 320,
+        "broker": "e9d5e15cc55fcbb5",
+        "x": 220,
+        "y": 380,
         "wires": []
     },
     {
@@ -33,13 +33,13 @@
         "topic": "test/topic",
         "qos": "2",
         "datatype": "auto-detect",
-        "broker": "d57d28d770a3cbf5",
+        "broker": "e9d5e15cc55fcbb5",
         "nl": false,
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 570,
-        "y": 420,
+        "x": 210,
+        "y": 480,
         "wires": [
             [
                 "b6ad932878b647d8",
@@ -60,8 +60,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 780,
-        "y": 420,
+        "x": 420,
+        "y": 480,
         "wires": []
     },
     {
@@ -102,8 +102,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 820,
-        "y": 480,
+        "x": 440,
+        "y": 520,
         "wires": [
             []
         ]
@@ -120,8 +120,8 @@
         "label": "Last message",
         "format": "{{msg.payload}}",
         "layout": "row-spread",
-        "x": 800,
-        "y": 540,
+        "x": 440,
+        "y": 560,
         "wires": []
     },
     {
@@ -142,8 +142,8 @@
         "sendOnBlur": true,
         "className": "",
         "topicType": "str",
-        "x": 550,
-        "y": 260,
+        "x": 210,
+        "y": 320,
         "wires": [
             [
                 "5dd17922f697f3b5"
@@ -220,12 +220,12 @@
         "name": "Get CA Certs",
         "estUrl": "https://localhost/.well-known/est/arburg/cacerts/",
         "estUrl_fieldType": "str",
-        "x": 790,
-        "y": 820,
+        "x": 190,
+        "y": 880,
         "wires": [
             [
                 "505fe46bb0bd25b2",
-                "784b3023c5815ab8"
+                "bd3a070088207e3b"
             ]
         ]
     },
@@ -242,8 +242,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1360,
-        "y": 820,
+        "x": 460,
+        "y": 940,
         "wires": []
     },
     {
@@ -266,7 +266,7 @@
         "payloadType": "str",
         "topic": "",
         "topicType": "str",
-        "x": 510,
+        "x": 210,
         "y": 820,
         "wires": [
             [
@@ -290,7 +290,7 @@
         "templateScope": "local",
         "className": "",
         "x": 100,
-        "y": 700,
+        "y": 760,
         "wires": [
             []
         ]
@@ -303,17 +303,17 @@
         "order": 2,
         "width": 0,
         "height": 0,
-        "name": "",
-        "label": "",
-        "format": "{{msg.payload}}",
+        "name": "Text",
+        "label": "Stored with success & Path is ",
+        "format": "{{msg.payload.path}}",
         "layout": "row-right",
         "className": "text-center",
         "style": true,
         "font": "",
         "fontSize": 16,
         "color": "#000000",
-        "x": 1250,
-        "y": 920,
+        "x": 410,
+        "y": 1000,
         "wires": []
     },
     {
@@ -325,14 +325,14 @@
         "order": 4,
         "width": "16",
         "height": "19",
-        "format": "<md-card>\n    <md-card-title>\n        <span class=\"md-headline\">CA Certificate (PEM)</span>\n    </md-card-title>\n\n    <md-card-content layout=\"column\">\n        <textarea\n      id=\"certDisplay\"\n      rows=\"20\"\n      readonly\n      style=\"width:100%; font-family: monospace; background-color: #f4f4f4; color: #222; padding: 12px; border-radius: 6px; border: 1px solid #ccc; resize: vertical;\">\n{{msg.payload}}\n    </textarea>\n        <br>\n        <md-button class=\"md-raised md-primary\" onclick=\"copyCert()\">📋 Copier le certificat</md-button>\n        <span id=\"copyStatus\" style=\"margin-left:10px; color:green;\"></span>\n    </md-card-content>\n</md-card>\n\n<script>\n    function copyCert() {\n    var textarea = document.getElementById(\"certDisplay\");\n    textarea.select();\n    document.execCommand(\"copy\");\n\n    // Message visuel de confirmation\n    var status = document.getElementById(\"copyStatus\");\n    status.textContent = \"✅ Copié !\";\n    setTimeout(() => status.textContent = \"\", 2000);\n  }\n</script>",
+        "format": "<md-card>\n    <md-card-title>\n        <span class=\"md-headline\">CA Certificate (PEM)</span>\n    </md-card-title>\n\n    <md-card-content layout=\"column\">\n        <textarea\n      id=\"certDisplay\"\n      rows=\"20\"\n      readonly\n      style=\"width:100%; font-family: monospace; background-color: #f4f4f4; color: #222; padding: 12px; border-radius: 6px; border: 1px solid #ccc; resize: vertical;\">\n{{msg.payload.certificate}}\n    </textarea>\n        <br>\n        <md-button class=\"md-raised md-primary\" onclick=\"copyCert()\">📋 Copier le certificat</md-button>\n        <span id=\"copyStatus\" style=\"margin-left:10px; color:green;\"></span>\n    </md-card-content>\n</md-card>\n\n<script>\n    function copyCert() {\n    var textarea = document.getElementById(\"certDisplay\");\n    textarea.select();\n    document.execCommand(\"copy\");\n\n    // Message visuel de confirmation\n    var status = document.getElementById(\"copyStatus\");\n    status.textContent = \"✅ Copié !\";\n    setTimeout(() => status.textContent = \"\", 2000);\n  }\n</script>",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 1020,
-        "y": 920,
+        "x": 420,
+        "y": 880,
         "wires": [
             []
         ]
@@ -400,11 +400,12 @@
         "persist": false,
         "filenamePrefix": "",
         "filenamePrefix_fieldType": "str",
-        "x": 520,
-        "y": 1120,
+        "x": 200,
+        "y": 1180,
         "wires": [
             [
-                "c55d9c69d5a7d4ba"
+                "c55d9c69d5a7d4ba",
+                "a75f19a9d350ff04"
             ]
         ]
     },
@@ -419,11 +420,12 @@
         "o": "",
         "ou": "",
         "san": "",
-        "x": 1090,
-        "y": 1120,
+        "x": 190,
+        "y": 1360,
         "wires": [
             [
-                "124bc60ba1d3d4da"
+                "124bc60ba1d3d4da",
+                "7c68d05b3aa27f4f"
             ]
         ]
     },
@@ -432,12 +434,12 @@
         "type": "trustpoint-build-enroll-payload",
         "z": "fc669d4eef925a6b",
         "name": "Build Enroll Payload",
-        "x": 1300,
-        "y": 1120,
+        "x": 220,
+        "y": 1420,
         "wires": [
             [
                 "56aa927683c7be6a",
-                "58404244b6bedeb0"
+                "fc44c286e3962000"
             ]
         ]
     },
@@ -456,11 +458,12 @@
         "clientKey": "",
         "clientKey_fieldType": "str",
         "rejectUnauthorized": false,
-        "x": 1510,
-        "y": 1120,
+        "x": 190,
+        "y": 1480,
         "wires": [
             [
-                "019f5049e2aef1a5"
+                "019f5049e2aef1a5",
+                "e86b4b3e40e3b454"
             ]
         ]
     },
@@ -479,8 +482,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 1950,
-        "y": 1100,
+        "x": 490,
+        "y": 1600,
         "wires": [
             []
         ]
@@ -493,8 +496,8 @@
         "active": true,
         "console": "false",
         "complete": "true",
-        "x": 1910,
-        "y": 1140,
+        "x": 450,
+        "y": 1540,
         "wires": []
     },
     {
@@ -502,27 +505,12 @@
         "type": "trustpoint-prepare-keystore",
         "z": "fc669d4eef925a6b",
         "name": "Prepare Keystore",
-        "x": 730,
-        "y": 1120,
+        "x": 210,
+        "y": 1240,
         "wires": [
             [
-                "4307a35328b155b9"
-            ]
-        ]
-    },
-    {
-        "id": "784b3023c5815ab8",
-        "type": "trustpoint-store-certificate",
-        "z": "fc669d4eef925a6b",
-        "name": "",
-        "filePath": "/home/pi/.node-red/certs/ca-certs.p7b",
-        "filePath_fieldType": "str",
-        "x": 1040,
-        "y": 820,
-        "wires": [
-            [
-                "3082ca62a2fe2243",
-                "4843cdf8f1cff114"
+                "4307a35328b155b9",
+                "dd22ec524cc791e5"
             ]
         ]
     },
@@ -531,13 +519,14 @@
         "type": "trustpoint-store-key",
         "z": "fc669d4eef925a6b",
         "name": "",
-        "filePath": "",
-        "filePath_fieldType": "str",
-        "x": 920,
-        "y": 1120,
+        "filePath": "/home/pi/.node-red/keys",
+        "filePathType": "str",
+        "x": 180,
+        "y": 1300,
         "wires": [
             [
-                "e3e65e6c988dc106"
+                "e3e65e6c988dc106",
+                "be045bef4373d8b1"
             ]
         ]
     },
@@ -548,8 +537,8 @@
         "name": "",
         "filePath": "",
         "filePath_fieldType": "str",
-        "x": 1700,
-        "y": 1120,
+        "x": 200,
+        "y": 1540,
         "wires": [
             [
                 "b452e4949e941d58",
@@ -558,19 +547,105 @@
         ]
     },
     {
-        "id": "58404244b6bedeb0",
+        "id": "7c68d05b3aa27f4f",
         "type": "debug",
         "z": "fc669d4eef925a6b",
-        "name": "debug 5",
+        "name": "csr debug",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1480,
-        "y": 1220,
+        "x": 420,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "fc44c286e3962000",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "build enroll payload debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "be045bef4373d8b1",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "store-key-debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "e86b4b3e40e3b454",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "enroll debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "a75f19a9d350ff04",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "geerate key debug ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "dd22ec524cc791e5",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "prepare keystore debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 1240,
         "wires": []
     },
     {
@@ -618,8 +693,8 @@
         "topicType": "str",
         "splitLayout": false,
         "className": "",
-        "x": 250,
-        "y": 1400,
+        "x": 270,
+        "y": 1720,
         "wires": [
             [
                 "dfe15302592d8726"
@@ -636,8 +711,8 @@
         "persist": false,
         "filenamePrefix": "",
         "filenamePrefix_fieldType": "str",
-        "x": 520,
-        "y": 1400,
+        "x": 200,
+        "y": 1780,
         "wires": [
             [
                 "f65b8c983af2f620"
@@ -655,8 +730,8 @@
         "o": "",
         "ou": "",
         "san": "",
-        "x": 1090,
-        "y": 1400,
+        "x": 190,
+        "y": 1960,
         "wires": [
             [
                 "fcabd74c8055e95b"
@@ -667,12 +742,11 @@
         "id": "fcabd74c8055e95b",
         "type": "trustpoint-build-enroll-payload",
         "z": "fc669d4eef925a6b",
-        "name": "Build Enroll Payload",
-        "x": 1300,
-        "y": 1400,
+        "name": "Build ReEnroll Payload",
+        "x": 220,
+        "y": 2020,
         "wires": [
             [
-                "ff4e19602a1bc9b9",
                 "3ed9ae1801020f67"
             ]
         ]
@@ -692,8 +766,8 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 2060,
-        "y": 1380,
+        "x": 480,
+        "y": 2180,
         "wires": [
             []
         ]
@@ -706,8 +780,8 @@
         "active": true,
         "console": "false",
         "complete": "true",
-        "x": 2010,
-        "y": 1420,
+        "x": 430,
+        "y": 2140,
         "wires": []
     },
     {
@@ -715,8 +789,8 @@
         "type": "trustpoint-prepare-keystore",
         "z": "fc669d4eef925a6b",
         "name": "Prepare Keystore",
-        "x": 730,
-        "y": 1400,
+        "x": 210,
+        "y": 1840,
         "wires": [
             [
                 "db050ccc2d23b595"
@@ -728,10 +802,10 @@
         "type": "trustpoint-store-key",
         "z": "fc669d4eef925a6b",
         "name": "",
-        "filePath": "",
-        "filePath_fieldType": "str",
-        "x": 920,
-        "y": 1400,
+        "filePath": "/home/pi/.node-red/keys",
+        "filePathType": "str",
+        "x": 180,
+        "y": 1900,
         "wires": [
             [
                 "ed53ce1007ceb24d"
@@ -745,8 +819,8 @@
         "name": "",
         "filePath": "",
         "filePath_fieldType": "str",
-        "x": 1800,
-        "y": 1400,
+        "x": 200,
+        "y": 2140,
         "wires": [
             [
                 "4baaa404bbcd7abe",
@@ -755,26 +829,10 @@
         ]
     },
     {
-        "id": "ff4e19602a1bc9b9",
-        "type": "debug",
-        "z": "fc669d4eef925a6b",
-        "name": "debug 6",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1480,
-        "y": 1500,
-        "wires": []
-    },
-    {
         "id": "3ed9ae1801020f67",
         "type": "trustpoint-simpleenroll",
         "z": "fc669d4eef925a6b",
-        "name": "Enroll Device",
+        "name": "Reenroll Device",
         "estHost": "https://127.0.0.1:443/.well-known/est/arburg/domaincredential/simpleenroll/",
         "useBasic": false,
         "username": "",
@@ -785,11 +843,67 @@
         "clientKey": "",
         "clientKey_fieldType": "str",
         "rejectUnauthorized": false,
-        "x": 1570,
-        "y": 1400,
+        "x": 200,
+        "y": 2080,
         "wires": [
             [
                 "4ae68266f236375d"
+            ]
+        ]
+    },
+    {
+        "id": "498d549ece5cec26",
+        "type": "comment",
+        "z": "fc669d4eef925a6b",
+        "name": "MQTT Section",
+        "info": "",
+        "x": 110,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "ed2d257ea5b6505a",
+        "type": "comment",
+        "z": "fc669d4eef925a6b",
+        "name": "Get CA Section",
+        "info": "",
+        "x": 120,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "ac42fe66f07656b4",
+        "type": "comment",
+        "z": "fc669d4eef925a6b",
+        "name": "Enrollment Section",
+        "info": "",
+        "x": 130,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "c873abf1cc5b9fba",
+        "type": "comment",
+        "z": "fc669d4eef925a6b",
+        "name": "Reenrollment Section",
+        "info": "",
+        "x": 140,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "bd3a070088207e3b",
+        "type": "trustpoint-store-ca",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "",
+        "filePathType": "str",
+        "x": 180,
+        "y": 940,
+        "wires": [
+            [
+                "3082ca62a2fe2243",
+                "4843cdf8f1cff114"
             ]
         ]
     },
@@ -804,12 +918,12 @@
         "height": 1
     },
     {
-        "id": "d57d28d770a3cbf5",
+        "id": "e9d5e15cc55fcbb5",
         "type": "mqtt-broker",
-        "name": "mosquitto_mTLS",
+        "name": "mosquitto_TLS",
         "broker": "127.0.0.1",
         "port": "8883",
-        "tls": "3a0f514a8da6848d",
+        "tls": "e3118664bc79b558",
         "clientid": "",
         "autoConnect": true,
         "usetls": true,
@@ -902,12 +1016,12 @@
         "className": ""
     },
     {
-        "id": "3a0f514a8da6848d",
+        "id": "e3118664bc79b558",
         "type": "tls-config",
         "name": "",
-        "cert": "/home/pi/.node-red/certs-mqtt/device-test-mqtt-cert.pem",
-        "key": "/home/pi/.node-red/keys/device-test-mqtt-key.pem",
-        "ca": "/home/pi/.node-red/certs-mqtt/ca.crt",
+        "cert": "/etc/mosquitto/certs/client.crt",
+        "key": "/etc/mosquitto/certs/client.key",
+        "ca": "/etc/mosquitto/certs/ca.crt",
         "certname": "",
         "keyname": "",
         "caname": "",
