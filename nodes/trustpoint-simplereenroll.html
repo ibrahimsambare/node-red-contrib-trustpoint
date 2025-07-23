@@ -1,4 +1,4 @@
-<script type="text/html" data-template-name="trustpoint-simplereenroll">
+<script type="text/html" data-template-name="trustpoint-simpleenroll">
 
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -7,7 +7,7 @@
 
     <div class="form-row">
         <label for="node-input-estHost"><i class="fa fa-link"></i> EST Base URL</label>
-        <input type="text" id="node-input-estHost" placeholder="https://localhost:8443/.well-known/est/simplereenroll">
+        <input type="text" id="node-input-estHost" placeholder="https://localhost:8443/.well-known/est/simpleenroll">
     </div>
 
     <div class="form-row">
@@ -17,12 +17,12 @@
 
     <div class="form-row">
         <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
-        <input type="text" id="node-input-username" placeholder="Optional username for Basic Auth">
+        <input type="text" id="node-input-username" placeholder="Basic Auth username">
     </div>
 
     <div class="form-row">
         <label for="node-input-password"><i class="fa fa-key"></i> Password</label>
-        <input type="password" id="node-input-password" placeholder="Optional password for Basic Auth">
+        <input type="password" id="node-input-password" placeholder="Basic Auth password">
     </div>
 
     <div class="form-row">
@@ -31,14 +31,14 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-clientCert"><i class="fa fa-file"></i> Client Cert</label>
-        <input type="text" id="node-input-clientCert" placeholder="msg.payload.clientCert or path">
+        <label for="node-input-clientCert"><i class="fa fa-file"></i> Client Certificate</label>
+        <input type="text" id="node-input-clientCert" placeholder="Path or msg.payload.clientCert">
         <input type="hidden" id="node-input-clientCert_fieldType">
     </div>
 
     <div class="form-row">
-        <label for="node-input-clientKey"><i class="fa fa-key"></i> Client Key</label>
-        <input type="text" id="node-input-clientKey" placeholder="msg.payload.clientKey or path">
+        <label for="node-input-clientKey"><i class="fa fa-key"></i> Client Private Key</label>
+        <input type="text" id="node-input-clientKey" placeholder="Path or msg.payload.clientKey">
         <input type="hidden" id="node-input-clientKey_fieldType">
     </div>
 
@@ -49,9 +49,9 @@
         </label>
     </div>
 
-    <div id="reenroll-preview" class="validation-result">
-        <div class="validation-box" id="reenroll-preview-box">
-            This node sends a CSR to the EST server using Simplereenroll. Provide `msg.payload` with a valid CSR (Buffer or PEM string).
+    <div id="enroll-preview" class="validation-result">
+        <div class="validation-box" id="enroll-preview-box">
+            This node sends a CSR to the EST server using SimpleEnroll. Provide <code>msg.payload</code> with a valid CSR (Buffer or PEM string).
         </div>
     </div>
 
@@ -73,7 +73,7 @@
 
 <script type="text/javascript">
     (function () {
-        RED.nodes.registerType('trustpoint-simplereenroll', {
+        RED.nodes.registerType('trustpoint-simpleenroll', {
             category: 'Trustpoint',
             color: '#2b3a67',
             defaults: {
@@ -93,7 +93,7 @@
             outputs: 1,
             icon: "font-awesome/fa-exchange",
             label: function () {
-                return this.name || "trustpoint-simplereenroll";
+                return this.name || "trustpoint-simpleenroll";
             },
             labelStyle: function () {
                 return this.name ? "node_label_italic" : "";
@@ -129,7 +129,7 @@
                 toggleAuthFields();
                 toggleMtlsFields();
 
-                $("#reenroll-preview-box").addClass("validation-info");
+                $("#enroll-preview-box").addClass("validation-info");
             }
         });
     })();
