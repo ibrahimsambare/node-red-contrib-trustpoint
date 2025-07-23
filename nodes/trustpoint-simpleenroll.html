@@ -17,12 +17,12 @@
 
     <div class="form-row">
         <label for="node-input-username"><i class="fa fa-user"></i> Username</label>
-        <input type="text" id="node-input-username" placeholder="Optional username for Basic Auth">
+        <input type="text" id="node-input-username" placeholder="Basic Auth username">
     </div>
 
     <div class="form-row">
         <label for="node-input-password"><i class="fa fa-key"></i> Password</label>
-        <input type="password" id="node-input-password" placeholder="Optional password for Basic Auth">
+        <input type="password" id="node-input-password" placeholder="Basic Auth password">
     </div>
 
     <div class="form-row">
@@ -31,14 +31,14 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-clientCert"><i class="fa fa-file"></i> Client Cert</label>
-        <input type="text" id="node-input-clientCert" placeholder="msg.payload.clientCert or path">
+        <label for="node-input-clientCert"><i class="fa fa-file"></i> Client Certificate</label>
+        <input type="text" id="node-input-clientCert" placeholder="Path or msg.payload.clientCert">
         <input type="hidden" id="node-input-clientCert_fieldType">
     </div>
 
     <div class="form-row">
-        <label for="node-input-clientKey"><i class="fa fa-key"></i> Client Key</label>
-        <input type="text" id="node-input-clientKey" placeholder="msg.payload.clientKey or path">
+        <label for="node-input-clientKey"><i class="fa fa-key"></i> Client Private Key</label>
+        <input type="text" id="node-input-clientKey" placeholder="Path or msg.payload.clientKey">
         <input type="hidden" id="node-input-clientKey_fieldType">
     </div>
 
@@ -51,7 +51,7 @@
 
     <div id="enroll-preview" class="validation-result">
         <div class="validation-box" id="enroll-preview-box">
-            This node sends a CSR to the EST server using SimpleEnroll. Provide `msg.payload` with a valid CSR (Buffer or PEM string).
+            This node sends a CSR to the EST server using SimpleEnroll. Provide <code>msg.payload</code> with a valid CSR (Buffer or PEM string).
         </div>
     </div>
 
