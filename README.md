@@ -4,7 +4,7 @@
 Supports full EST device lifecycle management, including secure key generation, CSR creation, certificate enrollment, renewal, storage, and CA retrieval.  
 Designed for industrial and IoT provisioning workflows. Tested on Raspberry Pi 5 for ProductionLab Wall demo.
 
-## v1.0.3 – 2025-07-16
+## v1.0.4 – 2025-07-23
 
 ### Improvements
 - Made `filePath` optional for `trustpoint-store-key` and `trustpoint-store-certificate` nodes
