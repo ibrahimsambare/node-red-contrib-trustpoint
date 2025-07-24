@@ -4,7 +4,7 @@
 Supports full EST device lifecycle management, including secure key generation, CSR creation, certificate enrollment, renewal, storage, and CA retrieval.  
 Designed for industrial and IoT provisioning workflows. Tested on Raspberry Pi 5 for ProductionLab Wall demo.
 
-## v1.0.4 – 2025-07-24
+## v1.0.5 – 2025-07-24
 
 ### Improvements
 
@@ -81,7 +81,7 @@ If you're using Dashboard features (e.g., forms, buttons, charts), you will also
 | `trustpoint-store-key`             | Save private key to disk, using a sanitized device ID as filename.                              |
 | `trustpoint-store-certificate`     | Save the issued certificate to disk and extract metadata (CNs, validity dates, key info, etc.). |
 | `trustpoint-cacerts`               | Retrieve the CA certificate chain from the EST `/cacerts` endpoint.                             |
-
+| `trustpoint-store-ca`              | Save the CA certificate to disk                                                                 |
 ---
 
 ## Installation
