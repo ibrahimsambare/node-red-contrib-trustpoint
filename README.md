@@ -7,10 +7,12 @@ Designed for industrial and IoT provisioning workflows. Tested on Raspberry Pi 5
 ## v1.0.4 – 2025-07-23
 
 ### Improvements
-- Made `filePath` optional for `trustpoint-store-key` and `trustpoint-store-certificate` nodes
-- Automatically creates default folders under `userDir` (`keys/`, `certs/`)
-- Improved `.html` UI logic with dynamic preview and user-friendly messages
-- Added flow examples for several usecases
+
+- ✨ Added support for mTLS: `clientCert`, `clientKey`, `serverCert`
+- 📁 Added example flows for each node (in `/examples`)
+- 🎨 Updated node color and improved label readability
+- 💡 Improved error handling and fallback for DER/PKCS#7 parsing
+
 
 ### 💡 Notes
 - Leaving `filePath` blank now stores files in a portable directory inside your Node-RED setup
