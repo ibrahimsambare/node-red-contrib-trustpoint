@@ -7,7 +7,7 @@
 
     <div class="form-row">
         <label for="node-input-estHost"><i class="fa fa-link"></i> EST Base URL</label>
-        <input type="text" id="node-input-estHost" placeholder="https://localhost:8443/.well-known/est/simpleenroll">
+        <input type="text" id="node-input-estHost" placeholder="https://localhost:8443/.well-known/est/simplereenroll">
     </div>
 
     <div class="form-row">
@@ -32,14 +32,22 @@
 
     <div class="form-row">
         <label for="node-input-clientCert"><i class="fa fa-file"></i> Client Certificate</label>
-        <input type="text" id="node-input-clientCert" placeholder="Path or msg.payload.clientCert">
-        <input type="hidden" id="node-input-clientCert_fieldType">
+        <input type="text" id="node-input-clientCert" placeholder="Path or msg.clientCert">
     </div>
 
     <div class="form-row">
         <label for="node-input-clientKey"><i class="fa fa-key"></i> Client Private Key</label>
-        <input type="text" id="node-input-clientKey" placeholder="Path or msg.payload.clientKey">
-        <input type="hidden" id="node-input-clientKey_fieldType">
+        <input type="text" id="node-input-clientKey" placeholder="Path or msg.clientKey">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-serverCert"><i class="fa fa-shield"></i> Server Certificate (CA)</label>
+        <input type="text" id="node-input-serverCert" placeholder="Path or msg.serverCert">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-serverKey"><i class="fa fa-key"></i> Server Private Key</label>
+        <input type="text" id="node-input-serverKey" placeholder="Path or msg.serverKey">
     </div>
 
     <div class="form-row">
@@ -51,7 +59,7 @@
 
     <div id="enroll-preview" class="validation-result">
         <div class="validation-box" id="enroll-preview-box">
-            This node sends a CSR to the EST server using SimpleEnroll. Provide <code>msg.payload</code> with a valid CSR (Buffer or PEM string).
+            This node sends a CSR to the EST server using SimpleReEnroll. Provide <code>msg.payload</code> with a valid CSR (Buffer or PEM string).
         </div>
     </div>
 
@@ -84,9 +92,9 @@
                 password: { value: "" },
                 useMtls: { value: false },
                 clientCert: { value: "" },
-                clientCert_fieldType: { value: "str" },
                 clientKey: { value: "" },
-                clientKey_fieldType: { value: "str" },
+                serverCert: { value: "" },
+                serverKey: { value: "" },
                 rejectUnauthorized: { value: true }
             },
             inputs: 1,
@@ -96,21 +104,9 @@
                 return this.name || "trustpoint-simplereenroll";
             },
             labelStyle: function () {
-                return this.name ? "node_label_italic" : "";
+                return "fill: white; font-weight: bold;";
             },
             oneditprepare: function () {
-                $("#node-input-clientCert").typedInput({
-                    default: 'str',
-                    types: ['str', 'msg', 'flow', 'global'],
-                    typeField: $("#node-input-clientCert_fieldType")
-                });
-
-                $("#node-input-clientKey").typedInput({
-                    default: 'str',
-                    types: ['str', 'msg', 'flow', 'global'],
-                    typeField: $("#node-input-clientKey_fieldType")
-                });
-
                 function toggleAuthFields() {
                     const useBasic = $("#node-input-useBasic").is(":checked");
                     $("#node-input-username").prop("disabled", !useBasic);
