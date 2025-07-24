@@ -1,0 +1,243 @@
+[
+    {
+        "id": "c44411bc7c42ad6e",
+        "type": "ui_form",
+        "z": "fc669d4eef925a6b",
+        "name": "Start Provisioning Form Enrollment",
+        "label": "Provision a Device",
+        "group": "ui_group_enroll",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Device ID",
+                "value": "deviceId",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Username",
+                "value": "estUsername",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "estPassword",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "deviceId": "",
+            "estUsername": "",
+            "estPassword": ""
+        },
+        "payload": "",
+        "submit": "Start Provisioning",
+        "cancel": "Cancel",
+        "topic": "",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 260,
+        "y": 1120,
+        "wires": [
+            [
+                "c1ade04a02f81c3d"
+            ]
+        ]
+    },
+    {
+        "id": "c1ade04a02f81c3d",
+        "type": "trustpoint-keygen",
+        "z": "fc669d4eef925a6b",
+        "name": "Generate Keys",
+        "algorithm": "RSA",
+        "keySize": "2048",
+        "persist": false,
+        "filenamePrefix": "",
+        "filenamePrefix_fieldType": "str",
+        "x": 200,
+        "y": 1180,
+        "wires": [
+            [
+                "c55d9c69d5a7d4ba",
+                "a75f19a9d350ff04"
+            ]
+        ]
+    },
+    {
+        "id": "e3e65e6c988dc106",
+        "type": "trustpoint-create-csr",
+        "z": "fc669d4eef925a6b",
+        "name": "Create CSR",
+        "privateKey": "",
+        "privateKey_fieldType": "str",
+        "cn": "",
+        "o": "",
+        "ou": "",
+        "san": "",
+        "x": 190,
+        "y": 1360,
+        "wires": [
+            [
+                "124bc60ba1d3d4da",
+                "7c68d05b3aa27f4f"
+            ]
+        ]
+    },
+    {
+        "id": "124bc60ba1d3d4da",
+        "type": "trustpoint-build-enroll-payload",
+        "z": "fc669d4eef925a6b",
+        "name": "Build Enroll Payload",
+        "x": 220,
+        "y": 1420,
+        "wires": [
+            [
+                "56aa927683c7be6a",
+                "fc44c286e3962000"
+            ]
+        ]
+    },
+    {
+        "id": "c55d9c69d5a7d4ba",
+        "type": "trustpoint-prepare-keystore",
+        "z": "fc669d4eef925a6b",
+        "name": "Prepare Keystore",
+        "x": 210,
+        "y": 1240,
+        "wires": [
+            [
+                "4307a35328b155b9",
+                "dd22ec524cc791e5"
+            ]
+        ]
+    },
+    {
+        "id": "4307a35328b155b9",
+        "type": "trustpoint-store-key",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "/home/pi/.node-red/keys",
+        "filePathType": "str",
+        "x": 180,
+        "y": 1300,
+        "wires": [
+            [
+                "e3e65e6c988dc106",
+                "be045bef4373d8b1"
+            ]
+        ]
+    },
+    {
+        "id": "7c68d05b3aa27f4f",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "csr debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "fc44c286e3962000",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "build enroll payload debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "be045bef4373d8b1",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "store-key-debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "a75f19a9d350ff04",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "generate key debug ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "dd22ec524cc791e5",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "prepare keystore debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "ui_group_enroll",
+        "type": "ui_group",
+        "name": "Enroll Device",
+        "tab": "ui_tab_enroll",
+        "order": 1,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_tab_enroll",
+        "type": "ui_tab",
+        "name": "Enrollment",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    }
+]
