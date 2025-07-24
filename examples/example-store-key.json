@@ -1,96 +1,175 @@
 [
     {
-        "id": "b12924a6a4383f68",
-        "type": "tab",
-        "label": "KeyGen & Store",
-        "disabled": false,
-        "info": "",
-        "env": []
+        "id": "c44411bc7c42ad6e",
+        "type": "ui_form",
+        "z": "fc669d4eef925a6b",
+        "name": "Start Provisioning Form Enrollment",
+        "label": "Provision a Device",
+        "group": "ui_group_enroll",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Device ID",
+                "value": "deviceId",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Username",
+                "value": "estUsername",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "estPassword",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "deviceId": "",
+            "estUsername": "",
+            "estPassword": ""
+        },
+        "payload": "",
+        "submit": "Start Provisioning",
+        "cancel": "Cancel",
+        "topic": "",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 260,
+        "y": 1120,
+        "wires": [
+            [
+                "c1ade04a02f81c3d"
+            ]
+        ]
     },
     {
-        "id": "a49020b1237bf146",
+        "id": "c1ade04a02f81c3d",
         "type": "trustpoint-keygen",
-        "z": "b12924a6a4383f68",
+        "z": "fc669d4eef925a6b",
         "name": "Generate Keys",
         "algorithm": "RSA",
         "keySize": "2048",
         "persist": false,
         "filenamePrefix": "",
         "filenamePrefix_fieldType": "str",
-        "x": 600,
-        "y": 380,
+        "x": 200,
+        "y": 1180,
         "wires": [
             [
-                "babc1f074df6e0c7"
+                "c55d9c69d5a7d4ba",
+                "a75f19a9d350ff04"
             ]
         ]
     },
     {
-        "id": "babc1f074df6e0c7",
+        "id": "c55d9c69d5a7d4ba",
         "type": "trustpoint-prepare-keystore",
-        "z": "b12924a6a4383f68",
+        "z": "fc669d4eef925a6b",
         "name": "Prepare Keystore",
-        "x": 810,
-        "y": 380,
+        "x": 210,
+        "y": 1240,
         "wires": [
             [
-                "04df9e4c9c3659ea"
+                "4307a35328b155b9",
+                "dd22ec524cc791e5"
             ]
         ]
     },
     {
-        "id": "04df9e4c9c3659ea",
+        "id": "4307a35328b155b9",
         "type": "trustpoint-store-key",
-        "z": "b12924a6a4383f68",
-        "name": "Store key",
-        "filePath": "home/pi/Downloads",
+        "z": "fc669d4eef925a6b",
+        "name": "",
+        "filePath": "/home/pi/.node-red/keys",
         "filePathType": "str",
-        "x": 1000,
-        "y": 380,
+        "x": 180,
+        "y": 1300,
         "wires": [
             [
-                "f6685dfaa4e459f7"
+                "e3e65e6c988dc106",
+                "be045bef4373d8b1"
             ]
         ]
     },
     {
-        "id": "f6685dfaa4e459f7",
+        "id": "be045bef4373d8b1",
         "type": "debug",
-        "z": "b12924a6a4383f68",
-        "name": "Result",
+        "z": "fc669d4eef925a6b",
+        "name": "store-key-debug",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
         "complete": "payload",
         "targetType": "msg",
-        "x": 1150,
-        "y": 380,
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 1300,
         "wires": []
     },
     {
-        "id": "08e2182bc04b70aa",
-        "type": "inject",
-        "z": "b12924a6a4383f68",
-        "name": "Start Test",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "{\"deviceId\":\"test-device-001\",\"estUsername\":\"testuser\",\"estPassword\":\"testpass\"}",
-        "payloadType": "json",
-        "x": 420,
-        "y": 380,
-        "wires": [
-            [
-                "a49020b1237bf146"
-            ]
-        ]
+        "id": "a75f19a9d350ff04",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "generate key debug ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "dd22ec524cc791e5",
+        "type": "debug",
+        "z": "fc669d4eef925a6b",
+        "name": "prepare keystore debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "ui_group_enroll",
+        "type": "ui_group",
+        "name": "Enroll Device",
+        "tab": "ui_tab_enroll",
+        "order": 1,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_tab_enroll",
+        "type": "ui_tab",
+        "name": "Enrollment",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
     }
 ]
