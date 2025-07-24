@@ -1,0 +1,87 @@
+[
+    {
+        "id": "6e5c554bc3349843",
+        "type": "trustpoint-cacerts",
+        "z": "fc669d4eef925a6b",
+        "name": "Get CA Certs",
+        "estUrl": "https://localhost/.well-known/est/arburg/cacerts/",
+        "estUrl_fieldType": "str",
+        "x": 190,
+        "y": 880,
+        "wires": [
+            [
+                "505fe46bb0bd25b2",
+                "bd3a070088207e3b"
+            ]
+        ]
+    },
+    {
+        "id": "c668d94ef9256a6b",
+        "type": "ui_button",
+        "z": "fc669d4eef925a6b",
+        "name": "Fetch CA Button",
+        "group": "64e68462e75b7176",
+        "order": 1,
+        "width": "16",
+        "height": 1,
+        "passthru": false,
+        "label": "Fetch CA Certs",
+        "tooltip": "Download CA from Trustpoint",
+        "color": "",
+        "bgcolor": "#007bff",
+        "className": "<h3 style=\"text-align: center;\"></h3><br><br><br>",
+        "icon": "cloud-download",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "x": 210,
+        "y": 820,
+        "wires": [
+            [
+                "6e5c554bc3349843"
+            ]
+        ]
+    },
+    {
+        "id": "505fe46bb0bd25b2",
+        "type": "ui_template",
+        "z": "fc669d4eef925a6b",
+        "group": "64e68462e75b7176",
+        "name": "",
+        "order": 4,
+        "width": "16",
+        "height": "19",
+        "format": "<md-card>\n    <md-card-title>\n        <span class=\"md-headline\">CA Certificate (PEM)</span>\n    </md-card-title>\n\n    <md-card-content layout=\"column\">\n        <textarea\n      id=\"certDisplay\"\n      rows=\"20\"\n      readonly\n      style=\"width:100%; font-family: monospace; background-color: #f4f4f4; color: #222; padding: 12px; border-radius: 6px; border: 1px solid #ccc; resize: vertical;\">\n{{msg.payload.certificate}}\n    </textarea>\n        <br>\n        <md-button class=\"md-raised md-primary\" onclick=\"copyCert()\">📋 Copier le certificat</md-button>\n        <span id=\"copyStatus\" style=\"margin-left:10px; color:green;\"></span>\n    </md-card-content>\n</md-card>\n\n<script>\n    function copyCert() {\n    var textarea = document.getElementById(\"certDisplay\");\n    textarea.select();\n    document.execCommand(\"copy\");\n\n    // Message visuel de confirmation\n    var status = document.getElementById(\"copyStatus\");\n    status.textContent = \"✅ Copié !\";\n    setTimeout(() => status.textContent = \"\", 2000);\n  }\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 420,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "64e68462e75b7176",
+        "type": "ui_group",
+        "name": "Get CA",
+        "tab": "c7d1f3d0b0cc5866",
+        "order": 1,
+        "disp": true,
+        "width": "16",
+        "collapse": false,
+        "className": "<div style=\"background:#f7f7f7; border:1px solid #ccc; padding:10px; font-family:monospace; white-space:pre-wrap; max-height:300px; overflow:auto; font-size:13px;\">     {{msg.payload}} </div>"
+    },
+    {
+        "id": "c7d1f3d0b0cc5866",
+        "type": "ui_tab",
+        "name": "Get CA",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    }
+]
